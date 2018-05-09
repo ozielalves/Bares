@@ -32,7 +32,7 @@ TODO
 
 ## TODO
 
-- [] TUDO
+- [ ] TUDO
 
 ## Authorship
 

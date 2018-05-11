@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This programming project implements the BARES, Basic ARithmetic Expression Evaluator based on Stacks.  
+This programming project implements the BARES, Basic Arithmetic Expression Evaluator based on Stacks.  
 
 We introduce a few simplifications on the input so we may focus only on the algorithms itself.
 They are: the arithmetic expressions must only accept one-digit operands, and; all expressions are considered syntactically correct.

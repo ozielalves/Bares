@@ -43,7 +43,9 @@ class Parser
                     MISSING_TERM,
                     EXTRANEOUS_SYMBOL,
                     INTEGER_OUT_OF_RANGE,
-					MISSING_CLOSING_SCOPE
+					MISSING_CLOSING_SCOPE,
+					NUMERIC_OVERFLOW,
+					DIVISION_BY_ZERO
             };
 
             //=== Members (public).

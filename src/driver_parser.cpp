@@ -18,7 +18,10 @@ std::vector<std::string> expressions =
     "1.3 * 4",
     "a + 4",
     "       ",
-    "  123 *  548"
+    "  123 *  548",
+	"5+(7*1)-4/(4-2)",
+	" (12 + 5) * 3",
+	" 5 + ((2 + 1/ 3)"
 };
 
 void print_error_msg( const Parser::ResultType & result, std::string str )
@@ -44,6 +47,15 @@ void print_error_msg( const Parser::ResultType & result, std::string str )
         case Parser::ResultType::INTEGER_OUT_OF_RANGE:
             std::cout << ">>> Integer constant out of range beginning at column (" << result.at_col << ")!\n";
             break;
+		case Parser::ResultType::MISSING_CLOSING_SCOPE:
+            std::cout << ">>> Missing closing \")\" at column (" << result.at_col << ")!\n";
+            break;
+		case Parser::ResultType::NUMERIC_OVERFLOW:
+            std::cout << ">>> Numeric overflow error!\n";
+            break;
+		case Parser::ResultType::DIVISION_BY_ZERO:
+            std::cout << ">>> Divison by zero!\n";
+            break;	
         default:
             std::cout << ">>> Unhandled error found!\n";
             break;

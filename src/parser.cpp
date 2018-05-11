@@ -2,6 +2,8 @@
 #include <iterator>
 #include <algorithm>
 
+int diffOPENING_CLOSING = 0;
+
 /// Converts the input character c_ into its corresponding terminal symbol code.
 Parser::terminal_symbol_t  Parser::lexer( char c_ ) const
 {
@@ -98,7 +100,6 @@ void Parser::skip_ws( void )
 }
 
 
-
 //=== Non Terminal Symbols (NTS) methods.
 
 /// Validates (i.e. returns true or false) and consumes an expression from the input string.
@@ -113,7 +114,6 @@ void Parser::skip_ws( void )
 Parser::ResultType Parser::expression()
 {
     ResultType result;
-    // TODO: implementar esta função.
 	// Processe um termo.
 	result = term();
 	//Vamos tokenizar este termo, caso esteja bem formado.
@@ -124,7 +124,10 @@ Parser::ResultType Parser::expression()
 		// e posteriormente outro termo. Seguidas e seguidas vezes.
 		while( not end_input() )
 		{
-			if( accept( terminal_symbol_t::TS_EXPO) or accept( terminal_symbol_t::TS_TIMES) or accept( terminal_symbol_t::TS_DIV) or accept( terminal_symbol_t::TS_MOD) or accept( terminal_symbol_t::TS_PLUS) or accept( terminal_symbol_t::TS_MINUS) )
+			// Depois de lido um termo, um operador faz-se necessário.
+			if( accept( terminal_symbol_t::TS_EXPO) or accept( terminal_symbol_t::TS_TIMES) or
+				accept( terminal_symbol_t::TS_DIV) or accept( terminal_symbol_t::TS_MOD) or
+				accept( terminal_symbol_t::TS_PLUS) or accept( terminal_symbol_t::TS_MINUS) )
 			{
 				std::string token_str;
 				auto temp(it_curr_symb);
@@ -145,9 +148,10 @@ Parser::ResultType Parser::expression()
 			result = term();
 			if( result.type != ResultType::OK )
 			{
+				std::cout << "CHUPACUU\n";
 				if( result.type == ResultType::ILL_FORMED_INTEGER or result.type == ResultType::INTEGER_OUT_OF_RANGE)
 				{
-					return result;
+					return ResultType( ResultType::NUMERIC_OVERFLOW, std::distance( expr.begin(), it_curr_symb ) );
 				}
 
 				return ResultType( ResultType::MISSING_TERM, std::distance( expr.begin(), it_curr_symb ) );
@@ -175,61 +179,73 @@ Parser::ResultType Parser::expression()
 Parser::ResultType Parser::term()
 {
 	ResultType result;
-    skip_ws();
-	if( accept( terminal_symbol_t::TS_OPENING) )
+	skip_ws();	
+    if( accept( terminal_symbol_t::TS_OPENING ) )
 	{
-		std::string token_string;		// String to be inserted as token.
-		auto temp(it_curr_symb);		// Iterator to possition past "(".
-		std::advance(it_curr_symb, -1);	// Iterator before "(".
+		// Increases the difference between scopes of opening and closing.
+		diffOPENING_CLOSING++;
 
-		std::copy( it_curr_symb, temp, std::back_inserter( token_string ) );
+		std::cout << "SUPER MEGA DEBUG PRO PARENTESES\n";
+		token_list.emplace_back( Token( "(", Token::token_t::SCOPE ) );
 
-		token_list.emplace_back( Token( token_string, Token::token_t::SCOPE ) );
-		//token_list.emplace_back( Token( "(", Token::token_t::SCOPE ) );
-
-		// Se um parentese foi aberto, então devesse processar uma expressão
-		// Processe uma expressão
+		// Se um parentese foi aberto, então devesse processar uma expressão.
+		// Procesa a expressão.
 		result = expression();
-		skip_ws();
-
-		if( not accept( terminal_symbol_t::TS_CLOSING) )
+		if( result.type != ResultType::OK )
 		{
-			return ResultType( ResultType::MISSING_CLOSING_SCOPE,
-								std::distance( expr.begin(), it_curr_symb ) );
+			return result;	
 		}
-		
+		skip_ws();
 	}
-			
-    // Guarda o início do termo no input, para possíveis mensagens de erro.
-    auto begin_token( it_curr_symb );
-    // Processe um inteiro.
-    result = integer();
-    // Vamos tokenizar o inteiro, se ele for bem formado.
-    if ( result.type == ResultType::OK )
-    {
-        // Copiar a substring correspondente para uma variável string.
-        std::string token_str;
-        std::copy( begin_token, it_curr_symb, std::back_inserter( token_str ) );
-        // Tentar realizar a conversão de string para inteiro (usar stoll()).
-        input_int_type token_int;
-        try { token_int = stoll( token_str ); }
-        catch( const std::invalid_argument & e )
-        {
-            return ResultType( ResultType::ILL_FORMED_INTEGER, 
-                               std::distance( expr.begin(), begin_token ) );
-        }
 
-        // Recebemos um inteiro válido, resta saber se está dentro da faixa.
-        if ( token_int < std::numeric_limits< required_int_type >::min() or
-             token_int > std::numeric_limits< required_int_type >::max() )
-		{
-            // Fora da faixa, reportar erro.
-            return ResultType( ResultType::INTEGER_OUT_OF_RANGE, 
-                               std::distance( expr.begin(), begin_token ) );
-        }
-        // Coloca o novo token na nossa lista de tokens.
-        token_list.emplace_back( Token( token_str, Token::token_t::OPERAND ) );
-    }
+	// Se não detectamos parênteses, então devemos analisar um inteiro.
+	if ( not accept( terminal_symbol_t::TS_OPENING ) and not accept( terminal_symbol_t::TS_CLOSING ) )
+	{			
+	    // Guarda o início do termo no input, para possíveis mensagens de erro.
+    	auto begin_token( it_curr_symb );
+	    // Processe um inteiro.
+	    result = integer();
+	    // Vamos tokenizar o inteiro, se ele for bem formado.
+	    if ( result.type == ResultType::OK )
+	    {
+	        // Copiar a substring correspondente para uma variável string.
+	        std::string token_str;
+	        std::copy( begin_token, it_curr_symb, std::back_inserter( token_str ) );
+
+    	    // Tentar realizar a conversão de string para inteiro (usar stoll()).
+        	input_int_type token_int;
+	        try { token_int = stoll( token_str ); }
+    	    catch( const std::invalid_argument & e )
+        	{
+            	return ResultType( ResultType::ILL_FORMED_INTEGER, 
+                	               std::distance( expr.begin(), begin_token ) );
+	        }
+
+    	    // Recebemos um inteiro válido, resta saber se está dentro da faixa.
+        	if ( token_int < std::numeric_limits< required_int_type >::min() or
+            	 token_int > std::numeric_limits< required_int_type >::max() )
+			{
+    	        // Fora da faixa, reportar erro.
+        	    return ResultType( ResultType::INTEGER_OUT_OF_RANGE, 
+            	                   std::distance( expr.begin(), begin_token ) );
+	        }
+    	    // Coloca o novo token na nossa lista de tokens.
+        	token_list.emplace_back( Token( token_str, Token::token_t::OPERAND ) );
+			std::cout << "MEUIRMAO>>> " << token_str << " então ele tava ok\n";
+	    }
+		skip_ws();
+	}
+
+	// Checa a existencia do parêntese de fechamento.
+	if( accept( terminal_symbol_t::TS_CLOSING ) )
+	{
+		diffOPENING_CLOSING--;
+		token_list.emplace_back( Token( ")", Token::token_t::SCOPE ) );
+		
+		// Ao término do parênteses, o termo considerasse terminado.
+		skip_ws();
+	}
+
     return result;
 }
 
@@ -252,7 +268,7 @@ Parser::ResultType Parser::integer()
 
     // Vamos tentar aceitar o '-'.
     accept( terminal_symbol_t::TS_MINUS );
-    return  natural_number();
+    return natural_number();
 }
 
 /// Validates (i.e. returns true or false) and consumes a natural number from the input string.
@@ -340,17 +356,19 @@ Parser::ResultType  Parser::parse( std::string e_ )
     skip_ws();
     if ( end_input() ) // Premature end?
     {
-        result =  ResultType( ResultType::UNEXPECTED_END_OF_EXPRESSION,
+        result = ResultType( ResultType::UNEXPECTED_END_OF_EXPRESSION,
                 std::distance( expr.begin(), it_curr_symb ) );
     }
     else
     {
-        // chamada regular para expressão.
+        // Chamada regular para expressão.
         result = expression();
 
         // Verificar se ainda sobrou algo na expressão.
         if ( result.type == ResultType::OK )
         {
+			if( diffOPENING_CLOSING != 0 ) return ResultType( ResultType::MISSING_CLOSING_SCOPE,
+															std::distance( expr.begin(), it_curr_symb ) );
             // Neste momento não deveria ter nada sobrando na string, a não ser
             // espaços em branco.
             skip_ws(); // Vamos "consumir" os espaços em branco, se existirem....
@@ -360,7 +378,7 @@ Parser::ResultType  Parser::parse( std::string e_ )
             }
         }
     }
-
+		
     return result;
 
 }

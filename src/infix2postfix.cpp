@@ -15,39 +15,39 @@
  */
 
 #include "../include/infix2postfix.hpp"
-
+#include "../include/token.hpp"
 /*---------------------------------------------------------------------------*/
 
-std::string infix2postfix( std::string infix_ ){
+std::string infix2postfix( std::vector< Token > infix_ ){
     
     // Stores the postfix expression.
     std::string postfix; // output
     // Stack to help the conversion.
-    std::stack< char > s;
+    std::stack< Token > s;
 
     // Going through the expression.
     for( auto ch : infix_ ){
         
         // Operand goes straight to the output symbol queue.
-        if ( is_operand( ch ) ){ 
-            postfix += ch;
-        } else if ( is_operator( ch ) ){
+        if ( (int)(ch.type) == 0 ){ 
+            postfix += ch.value;
+        } else if ( (int)(ch.type) == 1 ){
             // Pop out all the element with higher priority.
             while( not s.empty() and
                    has_higher_precedence( s.top() , ch ) ){
-                postfix += s.top();
+                postfix += s.top().value;
                 s.pop();
             }
             
             // The incoming operator always goes into the stack.
             s.push( ch );
-        } else if ( is_opening_scope( ch ) ){// "("
+        } else if (  ch.value == '(' ){// "("
             s.push( ch );
         }
-        else if ( is_closing_scope( ch ) ){ // ")"
+        else if ( ch.value == ')' ){ // ")"
             // pop out all elements that are not '('.
-            while( not s.empty() and not is_opening_scope( s.top() ) ){
-                postfix += s.top(); // goes to the output.
+            while( not s.empty() and s.top().value != '(' ){
+                postfix += s.top().value; // goes to the output.
                 s.pop();
             }
             s.pop(); // Remove the '(' that was on the stack.
@@ -59,13 +59,13 @@ std::string infix2postfix( std::string infix_ ){
     // Pop out all the remaining operators in the stack.
     while( not s.empty() ){
         
-        postfix += s.top();
+        postfix += s.top().value;
         s.pop();
     }
 
     return postfix;
 }
-
+/*
 bool is_operator( char c ){
     return std::string("+-%^/*").find( c ) != std::string::npos;
 }
@@ -81,9 +81,9 @@ bool is_opening_scope( char c ){
 bool is_closing_scope( char c ){
     return c == ')';
 }
-
-bool is_right_association( char op ){
-    return op == '^';
+*/
+bool is_right_association( const Token & op ){
+    return op.value == '^';
 }
 
 int get_precedence( char c ){
@@ -119,9 +119,10 @@ int get_precedence( char c ){
     return weight;
 }
 
-bool has_higher_precedence( char op1, char op2 ){
-    auto p1 = get_precedence( op1 );
-    auto p2 = get_precedence( op2 );
+
+bool has_higher_precedence( const Token & op1, const Token & op2 ){
+    auto p1 = op1.precedence;
+    auto p2 = op2.precedence;
 
     if ( p1 == p2 and is_right_association( op1 ) ){
         return false;
@@ -138,6 +139,8 @@ value_type execute_operator( value_type n1, value_type n2, char opr ){
     
     value_type result(0);
     
+/* Still need to give the Parser::ResultType to receive division by zero and 
+ * Numeric Overflow */
     switch ( opr ){
     
         case '^' : result = static_cast<value_type>( pow( n1, n2 ) );
@@ -167,7 +170,7 @@ value_type evaluate_postfix( std::string postfix_ ){
     std::stack< value_type > s;
 
     for( auto ch : postfix_ ){
-        if ( is_operand(ch ) ){
+        if ( ch >= '0' and ch <= '9' ){
             s.push( char2integer(ch) );
         }
         else if ( is_operator(ch) ){

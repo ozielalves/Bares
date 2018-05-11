@@ -31,7 +31,7 @@ struct Token
         {
             std::string types[] = { "OPERAND", "OPERATOR", "SCOPE" };
 
-            os_ << "<" << t_.value << "," << types[(int)(t_.type)] << ">";
+            os_ << "<" << t_.value << "," << types[(int)(t_.type)] << "," << t_.precedence << ">";
 
             return os_;
         }

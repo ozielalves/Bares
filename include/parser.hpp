@@ -9,7 +9,7 @@
 #include <limits>   // std::numeric_limits, para validar a faixa de um inteiro.
 #include <algorithm>// std::copy, para copiar substrings.
 
-#include "token.h"  // struct Token.
+#include "token.hpp"  // struct Token.
 
 /*!
  * Implements a recursive descendent parser for a EBNF grammar.
@@ -43,9 +43,7 @@ class Parser
                     MISSING_TERM,
                     EXTRANEOUS_SYMBOL,
                     INTEGER_OUT_OF_RANGE,
-					MISSING_CLOSING_SCOPE,
-					NUMERIC_OVERFLOW,
-					DIVISION_BY_ZERO
+					MISSING_CLOSING_SCOPE
             };
 
             //=== Members (public).
@@ -68,6 +66,8 @@ class Parser
         ResultType parse( std::string e_ );
         /// Retrieves the list of tokens created during the partins process.
         std::vector< Token > get_tokens( void ) const;
+		/// Tokenizes the precedence of a certain operator.
+		int get_precedence( std::string token_value );
 
         //==== Special methods
         /// Default constructor

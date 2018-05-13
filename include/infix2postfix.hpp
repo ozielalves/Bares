@@ -15,6 +15,9 @@
 #include <cassert>   // assert
 #include <cmath>     // pow
 #include <stdexcept> // std::runtime_error
+#include <vector>
+
+#include "token.hpp"
 
 // To change type. (Optional)
 using value_type = long int;

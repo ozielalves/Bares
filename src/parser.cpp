@@ -1,6 +1,7 @@
-#include "../include/parser.h"
+#include "../include/parser.hpp"
 #include <iterator>
 #include <algorithm>
+#include <cassert>
 
 int diffOPENING_CLOSING = 0;
 
@@ -34,6 +35,60 @@ Parser::terminal_symbol_t  Parser::lexer( char c_ ) const
     return terminal_symbol_t::TS_INVALID;
 }
 
+int Parser::get_precedence( std::string token_value )
+{
+	int weight = 0;
+
+	if( token_value == "^" ) weight = 4;
+	else if( token_value == "*" or token_value == "/" or token_value == "%" ) weight = 3;
+	else if( token_value == "+" or token_value == "-" ) weight = 2;
+	else if( token_value == "(" ) weight = 1;
+	else assert( false );
+
+	return weight;
+}
+
+/*
+int Parser::get_precedence( std::string token_value )
+{
+	int weight = 0;
+
+	switch( token_value )
+	{
+
+//	*------------------------ 4 ------------------------*
+		case "^":
+			weight = 4;
+			break;
+//	*------------------------ 3 ------------------------*
+		case "*":
+			weight = 3;
+			break;
+		case "/":
+			weight = 3;
+			break;
+		case "%":
+			weight = 3;
+			break;
+//	*------------------------ 2 ------------------------*
+		case "+":
+			weight = 2;
+			break;
+		case "-":
+			weight = 2;
+			break;
+//	*------------------------ 1 ------------------------*
+		case "(":
+			weight = 1;
+			break;
+//	*--------------------- Default ---------------------*
+		default:
+			assert( false );
+	}
+
+	return weight;
+}
+*/
 
 /// Consumes a valid character from the input source expression.
 void Parser::next_symbol( void )
@@ -135,7 +190,10 @@ Parser::ResultType Parser::expression()
 
 				// Copy the found string word on to 'token_str'.
 				std::copy( it_curr_symb, temp, std::back_inserter( token_str ));
-				token_list.emplace_back( Token( token_str, Token::token_t::OPERATOR ) );
+
+				int pred = get_precedence( token_str );
+
+				token_list.emplace_back( Token( token_str, Token::token_t::OPERATOR, pred ) );
 
 				// Don't forget to consume and advance iterator
 				std::advance( it_curr_symb, 1);
@@ -148,10 +206,9 @@ Parser::ResultType Parser::expression()
 			result = term();
 			if( result.type != ResultType::OK )
 			{
-				std::cout << "CHUPACUU\n";
 				if( result.type == ResultType::ILL_FORMED_INTEGER or result.type == ResultType::INTEGER_OUT_OF_RANGE)
 				{
-					return ResultType( ResultType::NUMERIC_OVERFLOW, std::distance( expr.begin(), it_curr_symb ) );
+					return result;
 				}
 
 				return ResultType( ResultType::MISSING_TERM, std::distance( expr.begin(), it_curr_symb ) );
@@ -185,8 +242,7 @@ Parser::ResultType Parser::term()
 		// Increases the difference between scopes of opening and closing.
 		diffOPENING_CLOSING++;
 
-		std::cout << "SUPER MEGA DEBUG PRO PARENTESES\n";
-		token_list.emplace_back( Token( "(", Token::token_t::SCOPE ) );
+		token_list.emplace_back( Token( "(", Token::token_t::SCOPE, 1 ) );
 
 		// Se um parentese foi aberto, então devesse processar uma expressão.
 		// Procesa a expressão.
@@ -231,7 +287,6 @@ Parser::ResultType Parser::term()
 	        }
     	    // Coloca o novo token na nossa lista de tokens.
         	token_list.emplace_back( Token( token_str, Token::token_t::OPERAND ) );
-			std::cout << "MEUIRMAO>>> " << token_str << " então ele tava ok\n";
 	    }
 		skip_ws();
 	}
@@ -390,7 +445,6 @@ Parser::get_tokens( void ) const
 {
     return token_list;
 }
-
 
 
 //==========================[ End of parse.cpp ]==========================//

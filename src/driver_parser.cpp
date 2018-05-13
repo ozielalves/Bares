@@ -2,12 +2,14 @@
 #include <iomanip>
 #include <vector>
 
-#include "../include/parser.h"
+#include "../include/parser.hpp"
+#include "../include/infix2postfix.hpp"
 
+/*
 std::vector<std::string> expressions =
 {
     "10",
-    "    12    +    4   8",
+    "    12    +    -4   8",
     "32767 - 32768 + 3",
     "5 + -32766",
     "5 + -32769",
@@ -21,7 +23,14 @@ std::vector<std::string> expressions =
     "  123 *  548",
 	"5+(7*1)-4/(4-2)",
 	" (12 + 5) * 3",
-	" 5 + ((2 + 1/ 3)"
+	" 5 + ((2 + 1)/ 3)"
+};
+*/
+
+std::vector< std::string > expressions =
+{
+	"4/(5^2)+(6^2^3)",
+	"1+ 3 * ( 4 + 8 * 3 ^7)"
 };
 
 void print_error_msg( const Parser::ResultType & result, std::string str )
@@ -50,13 +59,13 @@ void print_error_msg( const Parser::ResultType & result, std::string str )
 		case Parser::ResultType::MISSING_CLOSING_SCOPE:
             std::cout << ">>> Missing closing \")\" at column (" << result.at_col << ")!\n";
             break;
-		case Parser::ResultType::NUMERIC_OVERFLOW:
+/*		case Parser::ResultType::NUMERIC_OVERFLOW:
             std::cout << ">>> Numeric overflow error!\n";
             break;
 		case Parser::ResultType::DIVISION_BY_ZERO:
             std::cout << ">>> Divison by zero!\n";
             break;	
-        default:
+*/		default:
             std::cout << ">>> Unhandled error found!\n";
             break;
     }
@@ -89,8 +98,21 @@ int main()
         std::copy( lista.begin(), lista.end(),
                 std::ostream_iterator< Token >(std::cout, " ") );
         std::cout << "}\n";
-    }
 
+	/*---------------- Calculating ---------------------*/
+		std::string postfix = infix2postfix(lista);
+		std::cout << ">>> " << postfix << "\n";
+
+		std::cout << ">>> Olhando separadamente:\n";
+		for(auto & e : postfix ) {
+			std::cout << e;
+		}
+		std::cout << "\n";
+	
+		auto answer = evaluate_postfix( postfix );
+
+		std::cout << "Expression results in: " << answer << "\n";
+    }
 
 
     std::cout << "\n>>> Normal exiting...\n";

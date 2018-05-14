@@ -8,9 +8,10 @@ CXX ?= g++
 SRC_PATH = src
 BUILD_PATH = build
 BIN_PATH = $(BUILD_PATH)/bin
+DATA_PATH = data
 
 # executable #
-BIN_NAME = parser
+BIN_NAME = bares
 
 # extensions #
 SRC_EXT = cpp
@@ -54,6 +55,7 @@ dirs:
 	@echo "Creating directories"
 	@mkdir -p $(dir $(OBJECTS))
 	@mkdir -p $(BIN_PATH)
+	@mkdir -p $(DATA_PATH)
 
 .PHONY: clean
 clean:

@@ -2,68 +2,88 @@
 
 ## Introduction
 
-This programming project implements the BARES, Basic Arithmetic Expression Evaluator based on Stacks.  
+This programming project implements the BARES, Basic Arithmetic Expression Evaluator based on Stacks. Using the [EBNF](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form) grammar, the [recursive descendent parsing](https://en.wikipedia.org/wiki/Recursive_descent_parser) strategy for the expressionsn, and utilizing the [Tokenization method](https://en.wikipedia.org/wiki/Lexical_analysis#Tokenization) for separation.
 
-We introduce a few simplifications on the input so we may focus only on the algorithms itself.
-They are: the arithmetic expressions must only accept one-digit operands, and; all expressions are considered syntactically correct.
+## EBNF Grammar
+
+The grammatical rules to be aplied are:
+```bash
+<expr>			  := <term>, { ("+"|"-"|"%"|"/"|"*"|"^"),<term> };
+<term>			  := "(",<expr>,")" | <integer>;
+<integer>		  := "0" | ["-"],<natural_number>;
+<natural_number>  := <digit_excl_zero>,{<digit>};
+<digit_excl_zero> := "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+<digit>			  := "0" | <digit_excl_zero>;
+```
 
 ## Operations, scope, and precedence
 
 The supported operations and scope delimiters are:
 
-- `^`: power, right association, weight=3.
-- `*`: multiplication, left association, weight=2.
-- `/`: division, left association, weight=2.
-- `%`: module, left association, weight=2.
-- `+`: addition, left association, weight=1.
-- `-`: subtraction, left association, wight=1.
-- `(`: opening scope, weight=0.
-- `)`: closing scope, weight=n/a.
+- `^`: power, right association, weight=4.
+- `*`: multiplication, left association, weight=3.
+- `/`: division, left association, weight=3.
+- `%`: module, left association, weight=3.
+- `+`: addition, left association, weight=2.
+- `-`: subtraction, left association, wight=2.
+- `(`: opening scope, weight=1.
+- `)`: closing scope, weight=0.
 
 Here are a few examples of valid expressions:
 
 - `1 + 3 * ( 9/2 - 3 * 2 ^3 )`
 - `1+2-3*4%2  ^2`
+- `10 + 5/5 + 8 * 3`
+- `    128  *  37`
+- `(1 + 3^2)^3^1`
+- `------3`
+- `(30000/(10+10)) * 12`
 
 ## Algorithms
 
-We need to implement functions for:
+Functions implemented for:
 
-1. Converting an infix expression into its corresponding postfix representation, using a stack of symbols (character).
-2. Evaluating an postfix expression using a stack.
+1. Converting an expression received into a sequence of tokens, using a `recursive descendent parsing` strategy.
+2. Converting an infix tokenized expression into its corresponding postfix representation, using a stack of Tokens.
+3. Evaluating an postfix expression using a stack, therefore returning it's mathematical accurate value.
 
 ## TODO
 
 - [x] Code the function `infix2postfix`
 - [x] Code the function `evaluate_postfix`
-- [ ] Improve the code so it may accept operands with more than one digit.
-- [ ] Incorporate the syntactic analysis to parse any input expression.
-- [ ] Integrate all the modifications into a single program.
-
-
+- [x] Improve the code so it may accept operands with more than one digit.
+- [x] Incorporate the syntactic analysis to parse any input expression.
+- [x] Integrate all the modifications into a single program.
+- [ ] Fix parenthesis issue
+- [ ] Make it accept countless '-'. Like  $------3$.
+- [ ] Doxygen commentation
 
 ## How to compile
+
 To compile we will use a makefile, so all compilations be more dynamic and automatic.
 ```bash
 # To compile the whole project, insert 'make':
 $ make
 
-# To compile only the objects and see if class implementations were compiled well, insert 'make build':
-$ make build
-
-# To clean up all remaining trahsh data and files, such as the binary ones, insert 'make clean':
+# To clean up all remaining trash data and files, such as the binary ones, insert 'make clean':
 $ make clean
 ```
 
 ## How to execute
-Now, we show how to run the program
+
+Now, we show how to run the program. 
 ```bash
 # To execute program:
-$ ./  TODO
-
-# Detail: The program will also show the possible errors.(?) A gnt exclui isso se não der pra fazer.;-;
+$ ./bares <input_file> <output_file>
 ```
+Where `<input_file>` represents the file containing all the expressions wished to be tested. And `<output_file>` represents where the results obtained through parsing and calculations are written.
 
+#### Example
+
+Let's say your information is stored in a file called $in.txt$, which is inside the directory $data$, and you want to store the results into a file named $out.txt$, also inside $data$ directory. The program should run like this:
+```bash
+$ ./bares data/in.txt data/out.txt
+```
 
 ## Authorship
 

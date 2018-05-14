@@ -22,30 +22,19 @@
 // To change type. (Optional)
 using value_type = long int;
 
-/// Simple helper functions.
-/*
-bool is_operator( char c );
-bool is_operand( char c );
-bool is_opening_scope( char c );
-bool is_closing_scope( char c );
-*/
-
 /// Sees if you are looking at '^' operator
 bool is_right_association( const Token & op );
 /// Says if the first operator is bigger than the second operator.
 bool has_higher_precedence( const Token & op1, const Token & op2 );
 
 /// Converts a expression in infix notation to a corresponding profix representation.
-std::string infix2postfix( std::vector< Token > infix_);
-
-/// Converts a char (1-digit operand) into an integer.
-value_type char2integer( char ch );
+std::vector< std::string > infix2postfix( std::vector< Token > infix_ );
 
 /// Execute the binary operator on two operands and return the result.
-value_type execute_operator( value_type n1, value_type n2, char opr);
+std::pair< value_type,int > execute_operator( value_type n1, value_type n2, std::string opr );
 
 /// Change an infix expression into its corresponding postfix representation.
-value_type evaluate_postfix( std::string postfix_);
+std::pair< value_type,int > evaluate_postfix( std::vector< std::string > postfix_ );
 
 #endif
 

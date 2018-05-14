@@ -30,6 +30,10 @@ std::vector<std::string> expressions =
 std::vector< std::string > expressions =
 {
 	"4/(5^2)+(6^2^3)",
+    "5+(7*1)-4/(4-2)",
+    " (12 + 5) * 3",
+    "  123 *  548",
+    "5+10/(5-5)",
 	"1+ 3 * ( 4 + 8 * 3 ^7)"
 };
 
@@ -59,13 +63,7 @@ void print_error_msg( const Parser::ResultType & result, std::string str )
 		case Parser::ResultType::MISSING_CLOSING_SCOPE:
             std::cout << ">>> Missing closing \")\" at column (" << result.at_col << ")!\n";
             break;
-/*		case Parser::ResultType::NUMERIC_OVERFLOW:
-            std::cout << ">>> Numeric overflow error!\n";
-            break;
-		case Parser::ResultType::DIVISION_BY_ZERO:
-            std::cout << ">>> Divison by zero!\n";
-            break;	
-*/		default:
+		default:
             std::cout << ">>> Unhandled error found!\n";
             break;
     }
@@ -100,18 +98,29 @@ int main()
         std::cout << "}\n";
 
 	/*---------------- Calculating ---------------------*/
-		std::string postfix = infix2postfix(lista);
-		std::cout << ">>> " << postfix << "\n";
+		std::vector< std::string > postfix = infix2postfix(lista);
 
+        /*For debugging*/
 		std::cout << ">>> Olhando separadamente:\n";
 		for(auto & e : postfix ) {
-			std::cout << e;
+			std::cout << e << ", ";
 		}
 		std::cout << "\n";
-	
+        
 		auto answer = evaluate_postfix( postfix );
 
-		std::cout << "Expression results in: " << answer << "\n";
+        if( answer.second < 0)
+        {
+            std::cout << "Divison by zero!\n";
+            continue;
+        }
+        if( answer.second > 0)
+        {
+            std::cout << "Numeric Overflow!\n";
+            continue;
+        }
+
+		std::cout << "Expression results in: " << answer.first << "\n";
     }
 
 

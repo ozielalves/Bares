@@ -48,48 +48,6 @@ int Parser::get_precedence( std::string token_value )
 	return weight;
 }
 
-/*
-int Parser::get_precedence( std::string token_value )
-{
-	int weight = 0;
-
-	switch( token_value )
-	{
-
-//	*------------------------ 4 ------------------------*
-		case "^":
-			weight = 4;
-			break;
-//	*------------------------ 3 ------------------------*
-		case "*":
-			weight = 3;
-			break;
-		case "/":
-			weight = 3;
-			break;
-		case "%":
-			weight = 3;
-			break;
-//	*------------------------ 2 ------------------------*
-		case "+":
-			weight = 2;
-			break;
-		case "-":
-			weight = 2;
-			break;
-//	*------------------------ 1 ------------------------*
-		case "(":
-			weight = 1;
-			break;
-//	*--------------------- Default ---------------------*
-		default:
-			assert( false );
-	}
-
-	return weight;
-}
-*/
-
 /// Consumes a valid character from the input source expression.
 void Parser::next_symbol( void )
 {

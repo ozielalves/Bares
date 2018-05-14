@@ -15,12 +15,14 @@
  */
  
 #include "../include/infix2postfix.hpp"
+#include <limits>
+
 /*---------------------------------------------------------------------------*/
 
-std::string infix2postfix( std::vector< Token > infix_ ){
+std::vector< std::string > infix2postfix( std::vector< Token > infix_ ){
     
     // Stores the postfix expression.
-    std::string postfix; // output
+    std::vector< std::string > postfix; // output
     // Stack to help the conversion.
     std::stack< Token > s;
 
@@ -30,8 +32,7 @@ std::string infix2postfix( std::vector< Token > infix_ ){
         // Operand goes straight to the output symbol queue.
         if ( (int)(ch.type) == 0 )
 		{ 
-			std::cout << "Op: " << ch.value << "\n";
-            postfix += ch.value;
+            postfix.push_back( ch.value );
         }
 		else if ( (int)(ch.type) == 1 )
 		{
@@ -39,7 +40,7 @@ std::string infix2postfix( std::vector< Token > infix_ ){
             while( not s.empty() and
                    has_higher_precedence( s.top() , ch ) )
 			{
-                postfix += s.top().value;
+                postfix.push_back( s.top().value );
                 s.pop();
             }
             
@@ -55,7 +56,7 @@ std::string infix2postfix( std::vector< Token > infix_ ){
             // pop out all elements that are not '('.
             while( not s.empty() and s.top().value != "(" )
 			{
-                postfix += s.top().value; // goes to the output.
+                postfix.push_back( s.top().value ); // goes to the output.
                 s.pop();
             }
             s.pop(); // Remove the '(' that was on the stack.
@@ -68,29 +69,13 @@ std::string infix2postfix( std::vector< Token > infix_ ){
     // Pop out all the remaining operators in the stack.
     while( not s.empty() )
 	{    
-        postfix += s.top().value;
+        postfix.push_back( s.top().value );
         s.pop();
     }
 
     return postfix;
 }
-/*
-bool is_operator( char c ){
-    return std::string("+-%^/*").find( c ) != std::string::npos;
-}
 
-bool is_operand( char c ){
-    return ( c >= '0' and c<= '9');
-}
-
-bool is_opening_scope( char c ){
-    return c == '(';
-}
-
-bool is_closing_scope( char c ){
-    return c == ')';
-}
-*/
 bool is_right_association( const Token & op )
 {
     return op.value == "^";
@@ -109,50 +94,70 @@ bool has_higher_precedence( const Token & op1, const Token & op2 )
     return p1 >= p2 ;
 }
 
-value_type char2integer( char ch )
-{
-    return ch - '0';
-}
-
-value_type execute_operator( value_type n1, value_type n2, char opr )
-{    
-    value_type result(0);
+std::pair< value_type,int > execute_operator( value_type n1, value_type n2, std::string opr )
+{   
+    /* Generating a pair. The first position represents the resulting value
+    over the specified operations. The second position is a way of
+    declaring and passing possible errors during execution.
+    */
+    std::pair< value_type,int > result( 0,0 );
     
 /* Still need to give the Parser::ResultType to receive division by zero and 
  * Numeric Overflow */
-    switch ( opr )
+	
+	if( opr == "^" ) result.first = static_cast< value_type >( pow( n1, n2 ) );
+	else if( opr == "*" ) result.first = static_cast< value_type >( n1*n2 );
+	else if( opr == "/" )
 	{
-        case '^' : result = static_cast<value_type>( pow( n1, n2 ) );
-                   break;
-        case '*' : result =  n1 * n2;
-                   break;
-        case '/' : if ( n2 == 0 )
-                       throw std::runtime_error( "Division by zero!" );
-                   result = n1/n2;
-                   break;
-        case '%' : if ( n2 == 0 )
-                       throw std::runtime_error( "Division by zero!" );
-                   result = n1%n2;
-                   break;
-        case '+' : result = n1 + n2;
-                   break;
-        case '-' : result = n1 - n2;
-                   break;
-        default: assert(false);
+		if( n2 == 0 )
+        {
+            result.second = -1;
+        }
+		result.first = n1/n2;
+	}
+	else if( opr == "%" )
+	{
+		if( n2 == 0 )
+        {
+            result.second = -1;
+        }
+		result.first = n1%n2;
+	}
+	else if( opr == "+" ) result.first = n1+n2;
+	else if( opr == "-" ) result.first = n1-n2;
+    else {
+        assert( false );
+    }
+
+    if ( result.first < std::numeric_limits< short int >::min() or
+                 result.first > std::numeric_limits< short int >::max() )
+    {
+        std::cout << result.first << "\n";
+        result.second = 1;
     }
 
     return result;
 }
 
-value_type evaluate_postfix( std::string postfix_ ){
+std::pair< value_type,int > evaluate_postfix( std::vector< std::string > postfix_ ){
     
     std::stack< value_type > s;
 
-    for( auto ch : postfix_ )
+    for( auto & ch : postfix_ )
 	{
-        if ( ch >= '0' and ch <= '9' )
+		bool is_operand = true;
+		long long int integer;
+
+		try { integer = stoll( ch ); }
+		catch( const std::invalid_argument & e )
 		{
-            s.push( char2integer(ch) );
+			is_operand = false;
+		}
+
+        if ( is_operand )
+		{
+            std::cout << ">>> " << integer << "\n";
+            s.push( (value_type) integer );
         }
 
         else if ( std::string("+-%^/*").find( ch ) != std::string::npos )
@@ -161,14 +166,23 @@ value_type evaluate_postfix( std::string postfix_ ){
             auto op2 = s.top(); s.pop();
             auto op1 = s.top(); s.pop();
 
-            auto result = execute_operator( op1, op2, ch );
+            std::pair< value_type,int > result;
+            result = execute_operator( op1, op2, ch );
+            if( result.second < 0)
+            {
+                return std::make_pair( s.top(), -10 );
+            }
+            if( result.second > 0) 
+            {
+                return std::make_pair( s.top(), 10 );
+            }
 
-            s.push(result);
+            s.push( result.first );
         }
 
 		else assert(false);
     }
 
-    return s.top();
+    return std::make_pair( s.top(), 0 );
 }
 

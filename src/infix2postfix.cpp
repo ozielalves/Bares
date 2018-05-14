@@ -112,6 +112,7 @@ std::pair< value_type,int > execute_operator( value_type n1, value_type n2, std:
 		if( n2 == 0 )
         {
             result.second = -1;
+            return result;
         }
 		result.first = n1/n2;
 	}
@@ -120,6 +121,7 @@ std::pair< value_type,int > execute_operator( value_type n1, value_type n2, std:
 		if( n2 == 0 )
         {
             result.second = -1;
+            return result;
         }
 		result.first = n1%n2;
 	}

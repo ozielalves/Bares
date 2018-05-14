@@ -280,7 +280,8 @@ Parser::ResultType Parser::integer()
         return ResultType( ResultType::OK );
 
     // Vamos tentar aceitar o '-'.
-    accept( terminal_symbol_t::TS_MINUS );
+	accept( terminal_symbol_t::TS_MINUS );
+//	accept( terminal_symbol_t::TS_MINUS );
     return natural_number();
 }
 
@@ -356,7 +357,7 @@ bool Parser::digit()
  *
  * @see ResultType
  */
-Parser::ResultType  Parser::parse( std::string e_ )
+Parser::ResultType Parser::parse( std::string e_ )
 {
     expr = e_; //  Guarda a expressão no membro correspondente.
     it_curr_symb = expr.begin(); // Define o simbolo inicial a ser processado.
@@ -380,8 +381,11 @@ Parser::ResultType  Parser::parse( std::string e_ )
         // Verificar se ainda sobrou algo na expressão.
         if ( result.type == ResultType::OK )
         {
-			if( diffOPENING_CLOSING != 0 ) return ResultType( ResultType::MISSING_CLOSING_SCOPE,
-															std::distance( expr.begin(), it_curr_symb ) );
+			if( diffOPENING_CLOSING != 0 )
+			{
+				return ResultType( ResultType::MISSING_CLOSING_SCOPE,
+									std::distance( expr.begin(), it_curr_symb ) );
+			}
             // Neste momento não deveria ter nada sobrando na string, a não ser
             // espaços em branco.
             skip_ws(); // Vamos "consumir" os espaços em branco, se existirem....

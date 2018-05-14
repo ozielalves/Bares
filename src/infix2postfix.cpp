@@ -134,7 +134,6 @@ std::pair< value_type,int > execute_operator( value_type n1, value_type n2, std:
     if ( result.first < std::numeric_limits< short int >::min() or
                  result.first > std::numeric_limits< short int >::max() )
     {
-        std::cout << result.first << "\n";
         result.second = 1;
     }
 
@@ -145,7 +144,7 @@ std::pair< value_type,int > evaluate_postfix( std::vector< std::string > postfix
     
     std::stack< value_type > s;
 
-    for( auto & ch : postfix_ )
+    for( const auto & ch : postfix_ )
 	{
 		bool is_operand = true;
 		long long int integer;
@@ -158,7 +157,6 @@ std::pair< value_type,int > evaluate_postfix( std::vector< std::string > postfix
 
         if ( is_operand )
 		{
-            std::cout << ">>> " << integer << "\n";
             s.push( (value_type) integer );
         }
 
@@ -170,6 +168,11 @@ std::pair< value_type,int > evaluate_postfix( std::vector< std::string > postfix
 
             std::pair< value_type,int > result;
             result = execute_operator( op1, op2, ch );
+			
+			// Result of operation stacked.
+			s.push( result.first );
+			
+			// Considerates possible division by zero and numeric_overflow.
             if( result.second < 0)
             {
                 return std::make_pair( s.top(), -10 );
@@ -179,7 +182,6 @@ std::pair< value_type,int > evaluate_postfix( std::vector< std::string > postfix
                 return std::make_pair( s.top(), 10 );
             }
 
-            s.push( result.first );
         }
 
 		else assert(false);

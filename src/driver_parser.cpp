@@ -32,11 +32,13 @@ std::vector< std::string > expressions =
 	"4/(5^2)+(6^2^3)",
     "5+(7*1)-4/(4-2)",
     " (12 + 5) * 3",
+	"130 * 300",
     "5+10/(5-5)",
     "1+ 3 * ( 4 + 8 * 3 ^7)",
     "3276 * 10 + 7",
     "  123 *  548",
-    "123 * 548"
+    "123 * 548",
+	"-3"	
 };
 
 void print_error_msg( const Parser::ResultType & result, std::string str )
@@ -100,10 +102,10 @@ int main()
         std::cout << "}\n";
 
 	/*---------------- Calculating ---------------------*/
-		std::vector< std::string > postfix = infix2postfix(lista);
+		std::vector< std::string > postfix = infix2postfix( lista );
 
         /*For debugging*/
-		std::cout << ">>> Olhando separadamente:\n";
+		std::cout << "\n>>> Olhando separadamente:\n";
 		for(auto & e : postfix ) {
 			std::cout << e << ", ";
 		}

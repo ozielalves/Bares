@@ -128,8 +128,8 @@ void Parser::skip_ws( void )
 Parser::ResultType Parser::expression()
 {
     ResultType result;
-	// Processe um termo.
-	int minus = 0;
+	//
+/*	int minus = 0;
 	while( lexer( *it_curr_symb ) == terminal_symbol_t::TS_MINUS )
 	{
 		minus++;
@@ -145,7 +145,8 @@ Parser::ResultType Parser::expression()
 	{
 		it_curr_symb = it_curr_symb - 1;
 	}
-
+*/
+	// Processa um termo.
 	result = term();
 	//Vamos tokenizar este termo, caso esteja bem formado.
 	if( result.type == ResultType::OK )
@@ -186,7 +187,7 @@ Parser::ResultType Parser::expression()
 			if( end_input() ) {
 				return ResultType( ResultType::MISSING_TERM, std::distance( expr.begin(), it_curr_symb ) );
 			}
-			minus = 0;
+/*			minus = 0;
 			while( lexer( *it_curr_symb ) == terminal_symbol_t::TS_MINUS )
 			{
 				minus++;
@@ -202,7 +203,7 @@ Parser::ResultType Parser::expression()
 			{
 				it_curr_symb = it_curr_symb - 1;
 			}
-
+*/
 			result = term();
 			if( result.type != ResultType::OK )
 			{
@@ -231,8 +232,7 @@ Parser::ResultType Parser::expression()
 Parser::ResultType Parser::term()
 {
 	ResultType result;
-	skip_ws();
-/*	int minus = 0;
+	int minus = 0;
 	while( lexer( *it_curr_symb ) == terminal_symbol_t::TS_MINUS )
 	{
 		minus++;
@@ -241,9 +241,15 @@ Parser::ResultType Parser::term()
 	minus = minus % 2;
 	if( lexer( *it_curr_symb ) == terminal_symbol_t::TS_OPENING and minus != 0 )
 	{
-		token_list.emplace_back( Token( "-", Token::token_t::OPERATOR, 2 ) );
+		token_list.emplace_back( Token( "-1", Token::token_t::OPERAND, 0 ) );
+		token_list.emplace_back( Token( "*", Token::token_t::OPERATOR, 3 ) );
 	}
-*/
+	else if( minus != 0 and lexer( *it_curr_symb ) != terminal_symbol_t::TS_OPENING )
+	{
+		it_curr_symb = it_curr_symb - 1;
+	}
+
+	skip_ws();
     if( accept( terminal_symbol_t::TS_OPENING ) )
 	{
 		// Increases the difference between scopes of opening and closing.
@@ -267,23 +273,6 @@ Parser::ResultType Parser::term()
 	    // Guarda o início do termo no input, para possíveis mensagens de erro.
     	auto begin_token( it_curr_symb );
 	    // Processe um inteiro.
-
-		// Before processing an integer, we take in count the numerous unary		// signs '-'. If it is even, we consider it as just the integer without signs. If odd, we will consider the '-'.
-/*		int minus = 0;
-		while( lexer( *it_curr_symb ) == terminal_symbol_t::TS_MINUS )
-		{
-			minus++;
-			next_symbol();
-		}
-		minus = minus % 2;
-		if( minus != 0 )
-		{
-			begin_token = it_curr_symb-1;
-		}
-		else {
-			begin_token = it_curr_symb;
-		}
-*/	
 	    result = integer();
 	    // Vamos tokenizar o inteiro, se ele for bem formado.
 	    if ( result.type == ResultType::OK )
@@ -315,8 +304,8 @@ Parser::ResultType Parser::term()
 		skip_ws();
 	}
 
-	// Checa a existencia do parêntese de fechamento.
-	if( accept( terminal_symbol_t::TS_CLOSING ) )
+	// Consome parenteses de fechamento sequenciais.
+	while( accept( terminal_symbol_t::TS_CLOSING ) )
 	{
 		scopeCLOSING++;
 		std::cout << scopeOPENING << " " << scopeCLOSING << "\n";

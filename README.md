@@ -60,7 +60,7 @@ Functions implemented for:
 - [x] Make it accept countless '-' before integers terms. Like  $------3$.
 - [x] Make it accept countless '-' before parentheses with expressions. Like $-----(4+5+-7)$.
 - [ ] Correct that fucking ass nigga of Closing Parenthesis at begin.
-- [ ] Doxygen commentation.
+- [x] Doxygen commentation.
 
 ## How to compile
 

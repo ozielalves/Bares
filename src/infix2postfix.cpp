@@ -31,8 +31,8 @@ bool has_higher_precedence( const Token & op1, const Token & op2 ){
     auto p1 = op1.precedence;
     auto p2 = op2.precedence;
 
-    if ( p1 == p2 and is_right_association( op1 ) )
-    {
+    if ( p1 == p2 and is_right_association( op1 ) ){
+        
         return false;
     }
 
@@ -51,15 +51,13 @@ std::vector< std::string > infix2postfix( std::vector< Token > infix_ ){
 	{   
         // Operand goes straight to the output symbol queue.
         if ( (int)(ch.type) == 0 )
-		{ 
             postfix.push_back( ch.value );
-        }
-		else if ( (int)(ch.type) == 1 )
-		{
+        
+		else if ( (int)(ch.type) == 1 ){
+
             // Pop out all the element with higher priority.
-            while( not s.empty() and
-                   has_higher_precedence( s.top() , ch ) )
-			{
+            while( not s.empty() and has_higher_precedence( s.top() , ch ) ){
+                
                 postfix.push_back( s.top().value );
                 s.pop();
             }
@@ -67,15 +65,14 @@ std::vector< std::string > infix2postfix( std::vector< Token > infix_ ){
             // The incoming operator always goes into the stack.
             s.push( ch );
         } 
-		else if (  ch.value == "(" )
-		{// "("
+		else if (  ch.value == "(" ){
+            // "("
             s.push( ch );
         }
-        else if ( ch.value == ")" )
-		{ // ")"
+        else if ( ch.value == ")" ){ 
+            // ")"
             // pop out all elements that are not '('.
-            while( not s.empty() and s.top().value != "(" )
-			{
+            while( not s.empty() and s.top().value != "(" ){
                 postfix.push_back( s.top().value ); // goes to the output.
                 s.pop();
             }
@@ -109,34 +106,39 @@ std::pair< value_type,int > execute_operator( value_type n1, value_type n2, std:
     * Numeric Overflow */
 	
 	if( opr == "^" ) result.first = static_cast< value_type >( pow( n1, n2 ) );
-	else if( opr == "*" ) result.first = static_cast< value_type >( n1*n2 );
-	else if( opr == "/" )
-	{
-		if( n2 == 0 )
-        {
+	
+    else if( opr == "*" ) result.first = static_cast< value_type >( n1*n2 );
+	
+    else if( opr == "/" ){
+		if( n2 == 0 ){
+            
             result.second = -1;
             return result;
         }
+
 		result.first = n1/n2;
 	}
-	else if( opr == "%" )
-	{
-		if( n2 == 0 )
-        {
+    else if( opr == "%" ){
+		
+        if( n2 == 0 ){
+            
             result.second = -1;
             return result;
         }
 		result.first = n1%n2;
 	}
-	else if( opr == "+" ) result.first = n1+n2;
-	else if( opr == "-" ) result.first = n1-n2;
+	
+    else if( opr == "+" ) result.first = n1+n2;
+	
+    else if( opr == "-" ) result.first = n1-n2;
+   
     else {
         assert( false );
     }
 
     if ( result.first < std::numeric_limits< short int >::min() or
-                 result.first > std::numeric_limits< short int >::max() )
-    {
+                 result.first > std::numeric_limits< short int >::max() ){
+        
         result.second = 1;
     }
 
@@ -154,15 +156,15 @@ std::pair< value_type,int > evaluate_postfix( std::vector< std::string > postfix
 		long long int integer;
 
 		try { integer = stoll( ch ); }
-		catch( const std::invalid_argument & e )
-		{
-			is_operand = false;
-		}
+		catch( const std::invalid_argument & e ){
+            
+            is_operand = false;
+        }
+		
 
         if ( is_operand )
-		{
-            s.push( (value_type) integer );
-        }
+		    s.push( (value_type) integer );
+        
 
         else if ( std::string("+-%^/*").find( ch ) != std::string::npos )
 		{
@@ -178,13 +180,11 @@ std::pair< value_type,int > evaluate_postfix( std::vector< std::string > postfix
 			
 			// Considerates possible division by zero and numeric_overflow.
             if( result.second < 0)
-            {
                 return std::make_pair( s.top(), -10 );
-            }
+            
             if( result.second > 0) 
-            {
                 return std::make_pair( s.top(), 10 );
-            }
+            
 
         }
 

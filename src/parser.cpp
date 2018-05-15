@@ -129,6 +129,23 @@ Parser::ResultType Parser::expression()
 {
     ResultType result;
 	// Processe um termo.
+	int minus = 0;
+	while( lexer( *it_curr_symb ) == terminal_symbol_t::TS_MINUS )
+	{
+		minus++;
+		next_symbol();
+	}
+	minus = minus % 2;
+	if( lexer( *it_curr_symb ) == terminal_symbol_t::TS_OPENING and minus != 0 )
+	{
+		token_list.emplace_back( Token( "-1", Token::token_t::OPERAND, 0 ) );
+		token_list.emplace_back( Token( "*", Token::token_t::OPERATOR, 3 ) );
+	}
+	else if( minus != 0 and lexer( *it_curr_symb ) != terminal_symbol_t::TS_OPENING )
+	{
+		it_curr_symb = it_curr_symb - 1;
+	}
+
 	result = term();
 	//Vamos tokenizar este termo, caso esteja bem formado.
 	if( result.type == ResultType::OK )
@@ -159,6 +176,7 @@ Parser::ResultType Parser::expression()
 			}
 			else
 			{
+				std::cout << "só pode estar sendo aqui\n";
 				return ResultType( ResultType::EXTRANEOUS_SYMBOL, std::distance( expr.begin(), it_curr_symb ) );
 			}
 			
@@ -167,6 +185,22 @@ Parser::ResultType Parser::expression()
 			skip_ws();			
 			if( end_input() ) {
 				return ResultType( ResultType::MISSING_TERM, std::distance( expr.begin(), it_curr_symb ) );
+			}
+			minus = 0;
+			while( lexer( *it_curr_symb ) == terminal_symbol_t::TS_MINUS )
+			{
+				minus++;
+				next_symbol();
+			}
+			minus = minus % 2;
+			if( lexer( *it_curr_symb ) == terminal_symbol_t::TS_OPENING and minus != 0 )
+			{
+				token_list.emplace_back( Token( "-1", Token::token_t::OPERAND, 0 ) );
+				token_list.emplace_back( Token( "*", Token::token_t::OPERATOR, 3 ) );
+			}
+			else if( minus != 0 and lexer( *it_curr_symb ) != terminal_symbol_t::TS_OPENING )
+			{
+				it_curr_symb = it_curr_symb - 1;
 			}
 
 			result = term();
@@ -197,7 +231,19 @@ Parser::ResultType Parser::expression()
 Parser::ResultType Parser::term()
 {
 	ResultType result;
-	skip_ws();	
+	skip_ws();
+/*	int minus = 0;
+	while( lexer( *it_curr_symb ) == terminal_symbol_t::TS_MINUS )
+	{
+		minus++;
+		next_symbol();
+	}
+	minus = minus % 2;
+	if( lexer( *it_curr_symb ) == terminal_symbol_t::TS_OPENING and minus != 0 )
+	{
+		token_list.emplace_back( Token( "-", Token::token_t::OPERATOR, 2 ) );
+	}
+*/
     if( accept( terminal_symbol_t::TS_OPENING ) )
 	{
 		// Increases the difference between scopes of opening and closing.
@@ -223,7 +269,7 @@ Parser::ResultType Parser::term()
 	    // Processe um inteiro.
 
 		// Before processing an integer, we take in count the numerous unary		// signs '-'. If it is even, we consider it as just the integer without signs. If odd, we will consider the '-'.
-		int minus = 0;
+/*		int minus = 0;
 		while( lexer( *it_curr_symb ) == terminal_symbol_t::TS_MINUS )
 		{
 			minus++;
@@ -237,7 +283,7 @@ Parser::ResultType Parser::term()
 		else {
 			begin_token = it_curr_symb;
 		}
-	
+*/	
 	    result = integer();
 	    // Vamos tokenizar o inteiro, se ele for bem formado.
 	    if ( result.type == ResultType::OK )
@@ -306,7 +352,6 @@ Parser::ResultType Parser::integer()
 
     // Vamos tentar aceitar o '-'.
 	accept( terminal_symbol_t::TS_MINUS );
-//	accept( terminal_symbol_t::TS_MINUS );
     return natural_number();
 }
 
@@ -325,8 +370,7 @@ Parser::ResultType Parser::natural_number()
     // Tem que vir um número que não seja zero! (de acordo com a definição).
     if ( not digit_excl_zero() )
 	{
-		std::cout << "Ta entrando aqui vadia?\n";
-        return ResultType( ResultType::ILL_FORMED_INTEGER, std::distance( expr.begin(), it_curr_symb ) ) ;
+		return ResultType( ResultType::ILL_FORMED_INTEGER, std::distance( expr.begin(), it_curr_symb ) ) ;
 	}
 
     // Cosumir os demais dígitos, se existirem...

@@ -91,7 +91,7 @@ int main( int argc, char **argv )
         if ( result.type != Parser::ResultType::OK )
         {
             print_error_msg( result, expression, ofs );
-            continue;
+   //         continue;
             /* Won't calculate if it isn't parsed right */
         }
         else
@@ -107,9 +107,10 @@ int main( int argc, char **argv )
 		std::cout << "}\n";
         
 	/*---------------- Calculating ---------------------*/
-        /// Calculation only usable if expression is successfully parsed.
+        if( result.type != Parser::ResultType::OK ) continue;
+		/// Calculation only usable if expression is successfully parsed.
 		std::vector< std::string > postfix = infix2postfix( lista );
-
+		
         /*For debugging*/
 		std::cout << "\n>>> Olhando separadamente:\n";
 		for(auto & e : postfix ) {

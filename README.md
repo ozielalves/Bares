@@ -38,6 +38,7 @@ Here are a few examples of valid expressions:
 - `(1 + 3^2)^3^1`
 - `------3`
 - `(30000/(10+10)) * 12`
+- `-5-4-4-(-1-4)`
 
 ## Algorithms
 
@@ -54,8 +55,8 @@ Functions implemented for:
 - [x] Improve the code so it may accept operands with more than one digit.
 - [x] Incorporate the syntactic analysis to parse any input expression.
 - [x] Integrate all the modifications into a single program.
-- [ ] Fix parenthesis issue
-- [ ] Make it accept countless '-'. Like  $------3$.
+- [x] Fix parenthesis issue
+- [x] Make it accept countless '-'. Like  $------3$.
 - [ ] Doxygen commentation
 
 ## How to compile
@@ -78,7 +79,7 @@ $ ./bares <input_file> <output_file>
 ```
 Where `<input_file>` represents the file containing all the expressions wished to be tested. And `<output_file>` represents where the results obtained through parsing and calculations are written.
 
-#### Example
+### Example
 
 Let's say your information is stored in a file called $in.txt$, which is inside the directory $data$, and you want to store the results into a file named $out.txt$, also inside $data$ directory. The program should run like this:
 ```bash

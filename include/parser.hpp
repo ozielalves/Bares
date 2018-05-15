@@ -1,3 +1,11 @@
+/**
+ * @file parser.hpp
+ * @version 1.0
+ * @date May, 14.
+ * @author Daniel Guerra and Oziel Alves
+ * @title Parcer lib 
+ */
+
 #ifndef _PARSER_H_
 #define _PARSER_H_
 
@@ -9,10 +17,10 @@
 #include <limits>   // std::numeric_limits, para validar a faixa de um inteiro.
 #include <algorithm>// std::copy, para copiar substrings.
 
-#include "token.hpp"  // struct Token.
+#include "token.hpp"// struct Token.
 
 /*!
- * Implements a recursive descendent parser for a EBNF grammar.
+ * @brief Implements a recursive descendent parser for a EBNF grammar.
  *
  * This class also tokenizes the input expression into its components, creating a list of tokens.
  *
@@ -26,16 +34,17 @@
  *   <digit>           := "0"| <digit_excl_zero>;
  * ```
  */
+
 class Parser
 {
     public:
-        /// This struct represents the result of the parsing operation.
+        /// @brief This struct represents the result of the parsing operation.
         struct ResultType
         {
             //=== Alias
             typedef std::ptrdiff_t size_type; //!< Used for column location determination.
 
-            /// List of possible syntax errors.
+            /// @brief List of possible syntax errors.
             enum code_t {
                     OK = 0, //!< Expression successfuly parsed.
                     UNEXPECTED_END_OF_EXPRESSION,
@@ -50,7 +59,7 @@ class Parser
             code_t type;		//!< Error code.
             size_type at_col;	//!< Stores the column number where the error happened.
 
-            /// Default contructor.
+            /// @brief Default contructor.
             explicit ResultType( code_t type_=OK , size_type col_=0u )
                     : type{ type_ }
                     , at_col{ col_ }
@@ -62,25 +71,31 @@ class Parser
         typedef long long int input_int_type; //!< The integer type that we read from the input (larger thatn the required int).
 
         //==== Public interface
-        /// Parses and tokenizes an input source expression.  Return the result as a struct.
+        /// @brief Parses and tokenizes an input source expression.  Return the result as a struct.
         ResultType parse( std::string e_ );
-        /// Retrieves the list of tokens created during the partins process.
+        
+        /// @brief Retrieves the list of tokens created during the partins process.
         std::vector< Token > get_tokens( void ) const;
-		/// Tokenizes the precedence of a certain operator.
+		
+        /// @brief Tokenizes the precedence of a certain operator.
 		int get_precedence( std::string token_value );
 
         //==== Special methods
-        /// Default constructor
+        /// @brief Default constructor
         Parser() = default;
-        /// Default destructor
+        
+        /// @brief Default destructor
         ~Parser() = default;
-        /// Turn off copy constructor. We do not need it.
+        
+        /// @brief Turn off copy constructor. We do not need it.
         Parser( const Parser & ) = delete;  // Construtor cópia.
-        /// Turn off assignment operator.
+        
+        /// @brief Turn off assignment operator.
         Parser & operator=( const Parser & ) = delete; // Atribuição.
 
     private:
-        // Terminal symbols table
+        
+        // @brief Terminal symbols table
         enum class terminal_symbol_t{  // The symbols:-
 			TS_EXPO,			//!< code for "^"
     		TS_TIMES,			//!< code for "*"
@@ -107,12 +122,24 @@ class Parser
         //std::string token_str( terminal_symbol_t s_ ) const;
 
         //=== Support methods.
-        void next_symbol( void );                // Advances iterator to the next char in the expression.
-        bool peek( terminal_symbol_t c_ ) const; // Peeks the current character.
-        bool accept( terminal_symbol_t c_ );     // Tries to accept the requested symbol.
-        bool expect( terminal_symbol_t c_ );        // Skips any WS/Tab and tries to accept the requested symbol.
-        void skip_ws( void );                    // Skips any WS/Tab ans stops at the next character.
-        bool end_input( void ) const;            // Checks whether we reached the end of the expression string.
+        
+        //! @brief Advances iterator to the next char in the expression.
+        void next_symbol( void );                
+
+        //! @brief Peeks the current character.
+        bool peek( terminal_symbol_t c_ ) const;
+
+        //! @brief Tries to accept the requested symbol.
+        bool accept( terminal_symbol_t c_ );     
+ 
+        //! @brief Skips any WS/Tab and tries to accept the requested symbol.    
+        bool expect( terminal_symbol_t c_ );     
+
+        //! @brief Skips any WS/Tab ans stops at the next character. 
+        void skip_ws( void );                    
+        
+        //! @brief Checks whether we reached the end of the expression string.
+        bool end_input( void ) const;            
 
         //=== NTS methods.
         ResultType expression();

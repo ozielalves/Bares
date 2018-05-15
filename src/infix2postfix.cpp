@@ -19,12 +19,32 @@
 
 /*---------------------------------------------------------------------------*/
 
+//! @brief Sees if you are looking at '^' operator..
+bool is_right_association( const Token & op ){
+    
+    return op.value == "^";
+}
+
+//! @brief Says if the first operator is bigger than the second operator.
+bool has_higher_precedence( const Token & op1, const Token & op2 ){
+    
+    auto p1 = op1.precedence;
+    auto p2 = op2.precedence;
+
+    if ( p1 == p2 and is_right_association( op1 ) )
+    {
+        return false;
+    }
+
+    return p1 >= p2 ;
+}
+
+//! @brief Converts a expression in infix notation to a corresponding profix representation.
 std::vector< std::string > infix2postfix( std::vector< Token > infix_ ){
     
-    // Stores the postfix expression.
-    std::vector< std::string > postfix; // output
-    // Stack to help the conversion.
-    std::stack< Token > s;
+    std::vector< std::string > postfix; //!< Stores the postfix expression.
+    
+    std::stack< Token > s; //!< Stack to help the conversion.
 
     // Going through the expression.
     for( auto & ch : infix_ )
@@ -76,34 +96,17 @@ std::vector< std::string > infix2postfix( std::vector< Token > infix_ ){
     return postfix;
 }
 
-bool is_right_association( const Token & op )
-{
-    return op.value == "^";
-}
-
-bool has_higher_precedence( const Token & op1, const Token & op2 )
-{
-    auto p1 = op1.precedence;
-    auto p2 = op2.precedence;
-
-    if ( p1 == p2 and is_right_association( op1 ) )
-	{
-        return false;
-    }
-
-    return p1 >= p2 ;
-}
-
-std::pair< value_type,int > execute_operator( value_type n1, value_type n2, std::string opr )
-{   
+//! @brief Execute the binary operator on two operands and return the result.
+std::pair< value_type,int > execute_operator( value_type n1, value_type n2, std::string opr ){   
+    
     /* Generating a pair. The first position represents the resulting value
     over the specified operations. The second position is a way of
     declaring and passing possible errors during execution.
     */
     std::pair< value_type,int > result( 0,0 );
     
-/* Still need to give the Parser::ResultType to receive division by zero and 
- * Numeric Overflow */
+    /* Still need to give the Parser::ResultType to receive division by zero and 
+    * Numeric Overflow */
 	
 	if( opr == "^" ) result.first = static_cast< value_type >( pow( n1, n2 ) );
 	else if( opr == "*" ) result.first = static_cast< value_type >( n1*n2 );
@@ -140,6 +143,7 @@ std::pair< value_type,int > execute_operator( value_type n1, value_type n2, std:
     return result;
 }
 
+//! @brief Change an infix expression into its corresponding postfix representation.
 std::pair< value_type,int > evaluate_postfix( std::vector< std::string > postfix_ ){
     
     std::stack< value_type > s;

@@ -1,3 +1,11 @@
+/**
+ * @file parser.cpp
+ * @version 1.0
+ * @date May, 14.
+ * @author Daniel Guerra and Oziel Alves
+ * @title  Operation Parser 
+ */
+
 #include "../include/parser.hpp"
 #include <iterator>
 #include <algorithm>
@@ -5,7 +13,7 @@
 
 int diffOPENING_CLOSING = 0;
 
-/// Converts the input character c_ into its corresponding terminal symbol code.
+/// @brief Converts the input character c_ into its corresponding terminal symbol code.
 Parser::terminal_symbol_t  Parser::lexer( char c_ ) const
 {
     switch( c_ )
@@ -35,6 +43,7 @@ Parser::terminal_symbol_t  Parser::lexer( char c_ ) const
     return terminal_symbol_t::TS_INVALID;
 }
 
+/// @brief Determines each symbol precedence.
 int Parser::get_precedence( std::string token_value )
 {
 	int weight = 0;
@@ -48,14 +57,14 @@ int Parser::get_precedence( std::string token_value )
 	return weight;
 }
 
-/// Consumes a valid character from the input source expression.
+/// @brief Consumes a valid character from the input source expression.
 void Parser::next_symbol( void )
 {
     // Advances iterator to the next valid symbol for processing
     std::advance( it_curr_symb, 1 );
 }
 
-/// Checks whether we reached the end of the input expression string.
+/// @brief Checks whether we reached the end of the input expression string.
 bool Parser::end_input( void ) const
 {
     // "Fim de entrada" ocorre quando o iterador chega ao
@@ -63,7 +72,7 @@ bool Parser::end_input( void ) const
     return it_curr_symb == expr.end();
 }
 
-/// Returns the result of trying to match the current character with c_, **without** consuming the current character from the input expression.
+/// @return The result of trying to match the current character with c_, **without** consuming the current character from the input expression.
 bool Parser::peek( terminal_symbol_t c_ ) const
 {
     // Checks whether the input symbol is equal to the argument symbol.
@@ -71,7 +80,7 @@ bool Parser::peek( terminal_symbol_t c_ ) const
              lexer( *it_curr_symb ) == c_ );
 }
 
-/// Returns the result of trying to match (peek()) and consume the current character with c_.
+/// @return The result of trying to match (peek()) and consume the current character with c_.
 /*!
  * If the match is not successful, the current character (from the input) **is not consumed**.
  * @param c_ the current character from the input source expression we wish to parse.
@@ -91,7 +100,7 @@ bool Parser::accept( terminal_symbol_t c_ )
     return false;
 }
 
-/// Skips all white spaces and tries to accept() the next valid character. @see accept().
+/// @brief Skips all white spaces and tries to accept() the next valid character. @see accept().
 bool Parser::expect( terminal_symbol_t c_ )
 {
     // Skip all white spaces first.
@@ -100,7 +109,7 @@ bool Parser::expect( terminal_symbol_t c_ )
 }
 
 
-/// Ignores any white space or tabs in the expression until reach a valid character or end of input.
+/// @brief Ignores any white space or tabs in the expression until reach a valid character or end of input.
 void Parser::skip_ws( void )
 {
     // Skip white spaces, while at the same time, check for end of string.
@@ -115,7 +124,7 @@ void Parser::skip_ws( void )
 
 //=== Non Terminal Symbols (NTS) methods.
 
-/// Validates (i.e. returns true or false) and consumes an expression from the input string.
+/// @brief Validates (i.e. returns true or false) and consumes an expression from the input string.
 /*! This method parses a valid expression from the input and, at the same time, it tokenizes its components.
  *
  * Production rule is:
@@ -180,7 +189,7 @@ Parser::ResultType Parser::expression()
     return result;
 }
 
-/// Validates (i.e. returns true or false) and consumes a term from the input string.
+/// @brief Validates (i.e. returns true or false) and consumes a term from the input string.
 /*! This method parses a valid term from the input.
  *
  * Production rule is:
@@ -262,7 +271,7 @@ Parser::ResultType Parser::term()
     return result;
 }
 
-/// Validates (i.e. returns true or false) and consumes an integer from the input string.
+/// @brief Validates (i.e. returns true or false) and consumes an integer from the input string.
 /*! This method parses a valid integer from the input and, at the same time, add the integer to the token list.
  *
  * Production rule is:
@@ -285,7 +294,7 @@ Parser::ResultType Parser::integer()
     return natural_number();
 }
 
-/// Validates (i.e. returns true or false) and consumes a natural number from the input string.
+/// @brief Validates (i.e. returns true or false) and consumes a natural number from the input string.
 /*! This method parses a valid natural number from the input.
  *
  * Production rule is:
@@ -309,7 +318,7 @@ Parser::ResultType Parser::natural_number()
     return ResultType( ResultType::OK );
 }
 
-/// Validates (i.e. returns true or false) and consumes a non-zero digit from the input string.
+/// @brief Validates (i.e. returns true or false) and consumes a non-zero digit from the input string.
 /*! This method parses a single valid non-zero digit from the input.
  *
  * Production rule is:
@@ -324,7 +333,7 @@ bool Parser::digit_excl_zero()
     return accept( terminal_symbol_t::TS_NON_ZERO_DIGIT );
 }
 
-/// Validates (i.e. returns true or false) and consumes a zero digit from the input string.
+/// @brief Validates (i.e. returns true or false) and consumes a zero digit from the input string.
 /*! This method parses a single valid digit from the input.
  *
  * Production rule is:
@@ -401,7 +410,7 @@ Parser::ResultType Parser::parse( std::string e_ )
 }
 
 
-/// Return the list of tokens, which is the by-product created during the syntax analysis.
+/// @return The list of tokens, which is the by-product created during the syntax analysis.
 std::vector< Token >
 Parser::get_tokens( void ) const
 {

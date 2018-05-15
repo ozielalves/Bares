@@ -114,6 +114,7 @@ class Parser
         };
 
         //==== Private members.
+        
         std::string expr;					//!< The source expression to be parsed
         std::string::iterator it_curr_symb;	//!< Pointer to the current char inside the expression.
         std::vector< Token > token_list;	//!< Resulting list of tokens extracted from the expression.
@@ -142,11 +143,28 @@ class Parser
         bool end_input( void ) const;            
 
         //=== NTS methods.
+
+        //! @brief Validates (i.e. returns true or false) and consumes an expression from the input string.
         ResultType expression();
+
+        //! @brief Validates (i.e. returns true or false) and consumes a term from the input string.
+        //! @return true if a term has been successfuly parsed from the input; false otherwise.
         ResultType term();
+
+        //! @brief Validates (i.e. returns true or false) and consumes an integer from the input string.
+        //! @return true if an integer has been successfuly parsed from the input; false otherwise.
         ResultType integer();
+
+        //! @brief Validates (i.e. returns true or false) and consumes a natural number from the input string.
+        //! @return true if a natural number has been successfuly parsed from the input; false otherwise.
         ResultType natural_number();
+
+        //! @brief Validates (i.e. returns true or false) and consumes a non-zero digit from the input string.
+        //! @return true if a non-zero digit has been successfuly parsed from the input; false otherwise.
         bool digit_excl_zero();
+
+        //! @brief Validates (i.e. returns true or false) and consumes a zero digit from the input string.
+        //! @return true if a digit has been successfuly parsed from the input; false otherwise.
         bool digit();
 };
 

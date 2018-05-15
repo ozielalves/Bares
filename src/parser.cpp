@@ -47,7 +47,7 @@ Parser::terminal_symbol_t  Parser::lexer( char c_ ) const
 /// @brief Determines each symbol precedence.
 int Parser::get_precedence( std::string token_value )
 {
-	int weight = 0;
+	int weight = 0; //!< Symbol weight
 
 	if( token_value == "^" ) weight = 4;
 	else if( token_value == "*" or token_value == "/" or token_value == "%" ) weight = 3;
@@ -136,18 +136,19 @@ void Parser::skip_ws( void )
  */
 Parser::ResultType Parser::expression()
 {
-    ResultType result;
-	// Processa um termo.
-	result = term();
-	//Vamos tokenizar este termo, caso esteja bem formado.
+    ResultType result; 
+	
+	result = term(); //!< Process a term
+	
+	// Let's tokenize this term, if just well formed.
 	if( result.type == ResultType::OK )
 	{
 		skip_ws();
 		// Por estar bem formado, devesse ser seguido de operadores
-		// e posteriormente outro termo. Seguidas e seguidas vezes.
+		// and then another term. Time after time.
 		while( not end_input() )
 		{
-			// Depois de lido um termo, um operador faz-se necessário.
+			// After reading a term, an operator becomes necessary.
 			if( accept( terminal_symbol_t::TS_EXPO) or accept( terminal_symbol_t::TS_TIMES) or
 				accept( terminal_symbol_t::TS_DIV) or accept( terminal_symbol_t::TS_MOD) or
 				accept( terminal_symbol_t::TS_PLUS) or accept( terminal_symbol_t::TS_MINUS) )
@@ -236,8 +237,8 @@ Parser::ResultType Parser::term()
 
 		token_list.emplace_back( Token( "(", Token::token_t::SCOPE, 1 ) );
 
-		// Se um parentese foi aberto, então devesse processar uma expressão.
-		// Procesa a expressão.
+		// If a parenthesis was opened, then it should render an expression.
+		// Process the expression
 		result = expression();
 		if( result.type != ResultType::OK )
 		{
@@ -246,21 +247,21 @@ Parser::ResultType Parser::term()
 		skip_ws();
 	}
 
-	// Se não detectamos parênteses, então devemos analisar um inteiro.
+	// If we do not detect parentheses, then we must parse an integer.
 	if ( not accept( terminal_symbol_t::TS_OPENING ) and not accept( terminal_symbol_t::TS_CLOSING ) and not end_input() )
 	{			
-	    // Guarda o início do termo no input, para possíveis mensagens de erro.
+	    // Saves the beginning of the term in the input, for possible error messages.
     	auto begin_token( it_curr_symb );
-		// Processe um inteiro.
+		// Process an integer.
 	    result = integer();
-	    // Vamos tokenizar o inteiro, se ele for bem formado.
+	    // Let's tokenize the integer if it is well formed.
 	    if ( result.type == ResultType::OK )
 	    {
-	        // Copiar a substring correspondente para uma variável string.
+	        // Copy the corresponding substring to a string variable.
 	        std::string token_str;
 	        std::copy( begin_token, it_curr_symb, std::back_inserter( token_str ) );
 
-    	    // Tentar realizar a conversão de string para inteiro (usar stoll()).
+    	    // Try to convert the string to integer (use stoll ()).
         	input_int_type token_int;
 	        try { token_int = stoll( token_str ); }
     	    catch( const std::invalid_argument & e )
@@ -269,21 +270,21 @@ Parser::ResultType Parser::term()
                 	               std::distance( expr.begin(), begin_token ) );
 	        }
 
-    	    // Recebemos um inteiro válido, resta saber se está dentro da faixa.
+    	    // We received a valid integer, it remains to know if it is within the range.
         	if ( token_int < std::numeric_limits< required_int_type >::min() or
             	 token_int > std::numeric_limits< required_int_type >::max() )
 			{
-    	        // Fora da faixa, reportar erro.
+    	        // Out of range, report error
         	    return ResultType( ResultType::INTEGER_OUT_OF_RANGE, 
             	                   std::distance( expr.begin(), begin_token ) );
 	        }
-    	    // Coloca o novo token na nossa lista de tokens.
+    	    // Puts the new token on our token list.
         	token_list.emplace_back( Token( token_str, Token::token_t::OPERAND ) );
 	    }
 		skip_ws();
 	}
 
-	// Consome parenteses de fechamento sequenciais.
+	// It consumes sequential closing parentheses.
 	while( accept( terminal_symbol_t::TS_CLOSING ) )
 	{
 		scopeCLOSING++;
@@ -292,7 +293,7 @@ Parser::ResultType Parser::term()
 		}
 		token_list.emplace_back( Token( ")", Token::token_t::SCOPE ) );
 		
-		// Ao término do parênteses, o termo considerasse terminado.
+		// At the end of the parentheses, the term is considered finished.
 		skip_ws();
 	}
 
@@ -312,11 +313,11 @@ Parser::ResultType Parser::term()
  */
 Parser::ResultType Parser::integer()
 {
-    // Se aceitarmos um zero, então o inteiro acabou aqui.
+    // If we accepted a zero, then the whole thing ended here.
     if ( accept( terminal_symbol_t::TS_ZERO ) )
         return ResultType( ResultType::OK );
 
-    // Vamos tentar aceitar o '-'.
+    // Let's try to accept the '-'.
 	accept( terminal_symbol_t::TS_MINUS );
     return natural_number();
 }
@@ -333,13 +334,13 @@ Parser::ResultType Parser::integer()
  */
 Parser::ResultType Parser::natural_number()
 {
-    // Tem que vir um número que não seja zero! (de acordo com a definição).
+    // There must be a number that is not zero! (according to the definition).
     if ( not digit_excl_zero() )
 	{
 		return ResultType( ResultType::ILL_FORMED_INTEGER, std::distance( expr.begin(), it_curr_symb ) ) ;
 	}
 
-    // Cosumir os demais dígitos, se existirem...
+    // Use the other digits, if there are ...
     while( digit() ) /* empty */ ;
 
     return ResultType( ResultType::OK );
@@ -395,14 +396,14 @@ bool Parser::digit()
  */
 Parser::ResultType Parser::parse( std::string e_ )
 {
-    expr = e_; //  Guarda a expressão no membro correspondente.
-    it_curr_symb = expr.begin(); // Define o simbolo inicial a ser processado.
+    expr = e_; //!< Save the expression on the corresponding member.
+    it_curr_symb = expr.begin(); //!< Defines an initial symbol to be processed.
     ResultType result; // By default it's OK.
 
-    // Sempre limpamos a lista de tokens da rodada anterior.
+    // Always cleaning the token list from the last time.
     token_list.clear();
 
-    // Vamos verificar se recebemos uma  Let us ignore any leading white spaces.
+    // Let's check if we get a 'Let us ignore any leading white spaces.'
     skip_ws();
     if ( end_input() ) // Premature end?
     {
@@ -411,19 +412,19 @@ Parser::ResultType Parser::parse( std::string e_ )
     }
     else
     {
-        // Chamada regular para expressão.
+        // Regular call for expression.
 		scopeOPENING = 0;
 		scopeCLOSING = 0;
 
         result = expression();
 
-        // Verificar se ainda sobrou algo na expressão.
+        // Check if there is something left in the expression.
         if ( result.type == ResultType::OK )
         {
-	        // Neste momento não deveria ter nada sobrando na string, a não ser
-            // espaços em branco.
-            skip_ws(); // Vamos "consumir" os espaços em branco, se existirem....
-            if ( not end_input() ) // Se estiver tudo ok, deveríamos estar no final da string.
+	        // At this point there should be nothing left in the string, except
+            // white spaces.
+            skip_ws(); // Let's "consume" the blanks, if they exist ....
+            if ( not end_input() ) // If everything is ok, we should be at the end of the string.
             {
                 return ResultType( ResultType::EXTRANEOUS_SYMBOL, std::distance( expr.begin(), it_curr_symb ) );
             }

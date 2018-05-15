@@ -15,7 +15,7 @@
 #include <cassert>   // assert
 #include <cmath>     // pow
 #include <stdexcept> // std::runtime_error
-#include <vector>    // 
+#include <vector>    // push_back(), empty() ...
 
 #include "token.hpp"
 

@@ -14,8 +14,10 @@
  * Any other character is just ignored.
  */
  
-#include "../include/infix2postfix.hpp"
+#include "../include/infix2postfix.hpp" 
+#include "../include/stack.hpp" // stack
 #include <limits>
+
 
 /*---------------------------------------------------------------------------*/
 
@@ -43,12 +45,11 @@ bool has_higher_precedence( const Token & op1, const Token & op2 ){
 std::vector< std::string > infix2postfix( std::vector< Token > infix_ ){
     
     std::vector< std::string > postfix; //!< Stores the postfix expression.
-    
-    std::stack< Token > s; //!< Stack to help the conversion.
+/*change*/sc::stack <Token> s; //!< Stack to help the conversion.
 
     // Going through the expression.
-    for( auto & ch : infix_ )
-	{   
+    for( auto & ch : infix_ ){
+
         // Operand goes straight to the output symbol queue.
         if ( (int)(ch.type) == 0 )
             postfix.push_back( ch.value );

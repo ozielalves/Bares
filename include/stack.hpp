@@ -17,10 +17,10 @@ namespace sc
 		
 		private:
 
+		T *storage; //!< Store the data
 		size_t size_; //!< Capacity size_
 		size_t top_; //!< top_ index
-		T *storage; //!< Store the data
-
+		
 		/*! @brief Double the store capacity. */
 		void double_storage(void){
 			

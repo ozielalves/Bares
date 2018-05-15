@@ -1,5 +1,5 @@
 /**
- * @file stack.cpp
+ * @file stack.hpp
  * @version 1.0
  * @date May, 14.
  * @author Daniel Guerra and Oziel Alves
@@ -17,18 +17,18 @@ namespace sc
 		
 		private:
 
-		size_t size; //!< Capacity size
-		size_t top; //!< Top index
+		size_t size_; //!< Capacity size_
+		size_t top_; //!< top_ index
 		T *storage; //!< Store the data
 
 		/*! @brief Double the store capacity. */
 		void double_storage(void){
 			
-			T* temp = new [2*size]; // Reserves a doubled store capacity into a temp ptr
+			T* temp = new T[2*size_]; // Reserves a doubled store capacity into a temp ptr
 			
-			for( auto(0u); i < top; i++) // Copy the data to the new  area
+			for( auto i(0u); i < top_; i++) // Copy the data to the new  area
 			{
-				temp[i] = size[i];
+				temp[i] = storage[i];
 			}
 			
 			delete [] storage; // Free the old one
@@ -37,12 +37,12 @@ namespace sc
 			storage = temp; // Redirecting the pointer
 
 			
-			size *= 2; 
+			size_ *= 2; 
 
 		}
 		public:
 			/*! @brief Constructor. */
-			stack(void) : size(new T[1]), size(1), top(0){} // Initializer list
+			stack(void) : storage(new T[1]), size_(1), top_(0){} // Initializer list
 			
 			/*! @brief Destructor. */
 			~stack(void){
@@ -55,45 +55,45 @@ namespace sc
 		void push(const T& value){  
 			
 			// If is full double the storage capacity
-			if(size == top)	double_storage();
+			if(size_ == top_)	double_storage();
 			
-			storage[top++] = value;		
+			storage[top_++] = value;		
 		}
 
 		/*! @brief Removes the first element from the stack. */
-		void pop(){ 
+		void pop( ){ 
 
 			if( empty() )
 				throw std::runtime_error("You can't access an empty stack!");
 
-			--top;
+			--top_;
 		}
 
 		/*! @return The element at the top of the stack. */
-		T top(void ) const {
+		T top( ) const {
 			
 			if( empty() )
 				throw std::runtime_error("You can't access an empty stack!");
 
-			return storage[top-1];
+			return storage[top_-1];
 		}
 
 		/*! @brief Determines if the stack is empty. */
 		bool empty(void ) const {
 		
-			return top == 0;
+			return top_ == 0;
 		}
 
-		/*! @return The stack size. */
+		/*! @return The stack size_. */
 		size_t size(void ) const{
 			
-			return top;
+			return top_;
 		}
 
 		/*! @brief Clear the stack. */
 		void clear(void ){
 			
-			top = 0;
+			top_ = 0;
 		}
 	};
 }	

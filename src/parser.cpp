@@ -128,24 +128,6 @@ void Parser::skip_ws( void )
 Parser::ResultType Parser::expression()
 {
     ResultType result;
-	//
-/*	int minus = 0;
-	while( lexer( *it_curr_symb ) == terminal_symbol_t::TS_MINUS )
-	{
-		minus++;
-		next_symbol();
-	}
-	minus = minus % 2;
-	if( lexer( *it_curr_symb ) == terminal_symbol_t::TS_OPENING and minus != 0 )
-	{
-		token_list.emplace_back( Token( "-1", Token::token_t::OPERAND, 0 ) );
-		token_list.emplace_back( Token( "*", Token::token_t::OPERATOR, 3 ) );
-	}
-	else if( minus != 0 and lexer( *it_curr_symb ) != terminal_symbol_t::TS_OPENING )
-	{
-		it_curr_symb = it_curr_symb - 1;
-	}
-*/
 	// Processa um termo.
 	result = term();
 	//Vamos tokenizar este termo, caso esteja bem formado.
@@ -172,7 +154,7 @@ Parser::ResultType Parser::expression()
 
 				token_list.emplace_back( Token( token_str, Token::token_t::OPERATOR, pred ) );
 
-				// Don't forget to consume and advance iterator
+				// Don't forget to consume and advance iterator.
 				std::advance( it_curr_symb, 1);
 			}
 			else
@@ -184,27 +166,13 @@ Parser::ResultType Parser::expression()
 			// After a operator, we need a term to apply operation.
 			// If there is none, a term is missing.
 			skip_ws();			
-			if( end_input() ) {
+			if( end_input() )
+			{
 				return ResultType( ResultType::MISSING_TERM, std::distance( expr.begin(), it_curr_symb ) );
 			}
-/*			minus = 0;
-			while( lexer( *it_curr_symb ) == terminal_symbol_t::TS_MINUS )
-			{
-				minus++;
-				next_symbol();
-			}
-			minus = minus % 2;
-			if( lexer( *it_curr_symb ) == terminal_symbol_t::TS_OPENING and minus != 0 )
-			{
-				token_list.emplace_back( Token( "-1", Token::token_t::OPERAND, 0 ) );
-				token_list.emplace_back( Token( "*", Token::token_t::OPERATOR, 3 ) );
-			}
-			else if( minus != 0 and lexer( *it_curr_symb ) != terminal_symbol_t::TS_OPENING )
-			{
-				it_curr_symb = it_curr_symb - 1;
-			}
-*/
+
 			result = term();
+
 			if( result.type != ResultType::OK )
 			{
 				return result;
@@ -232,6 +200,8 @@ Parser::ResultType Parser::expression()
 Parser::ResultType Parser::term()
 {
 	ResultType result;
+
+	/// Process the several '-' signs that may come before a term.
 	int minus = 0;
 	while( lexer( *it_curr_symb ) == terminal_symbol_t::TS_MINUS )
 	{
@@ -272,7 +242,7 @@ Parser::ResultType Parser::term()
 	{			
 	    // Guarda o início do termo no input, para possíveis mensagens de erro.
     	auto begin_token( it_curr_symb );
-	    // Processe um inteiro.
+		// Processe um inteiro.
 	    result = integer();
 	    // Vamos tokenizar o inteiro, se ele for bem formado.
 	    if ( result.type == ResultType::OK )
@@ -308,10 +278,8 @@ Parser::ResultType Parser::term()
 	while( accept( terminal_symbol_t::TS_CLOSING ) )
 	{
 		scopeCLOSING++;
-		std::cout << scopeOPENING << " " << scopeCLOSING << "\n";
 		if( (scopeOPENING - scopeCLOSING) < 0 ) {
-			std::advance( it_curr_symb, -1 );
-			return ResultType( ResultType::EXTRANEOUS_SYMBOL, std::distance( expr.begin(), it_curr_symb ) );
+			return ResultType( ResultType::EXTRANEOUS_SYMBOL, std::distance( expr.begin(), it_curr_symb-1 ) );
 		}
 		token_list.emplace_back( Token( ")", Token::token_t::SCOPE ) );
 		

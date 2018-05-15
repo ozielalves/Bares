@@ -57,7 +57,8 @@ Functions implemented for:
 - [x] Incorporate the syntactic analysis to parse any input expression.
 - [x] Integrate all the modifications into a single program.
 - [x] Fix parenthesis issue.
-- [x] Make it accept countless '-'. Like  $------3$.
+- [x] Make it accept countless '-' before integers terms. Like  $------3$.
+- [x] Make it accept countless '-' before parentheses with expressions. Like $-----(4+5+-7)$.
 - [ ] Correct that fucking ass nigga of Closing Parenthesis at begin.
 - [ ] Doxygen commentation.
 

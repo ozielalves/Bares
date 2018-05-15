@@ -77,15 +77,15 @@ std::vector< std::string > infix2postfix( std::vector< Token > infix_ ){
                 s.pop();
             }
             s.pop(); // Remove the '(' that was on the stack.
-        } 
-		else{ // anything else.
+        }
+        else{ // anything else.
             // ignore this char.
         }
     }
 
     // Pop out all the remaining operators in the stack.
-    while( not s.empty() )
-	{    
+    while( not s.empty() ){
+
         postfix.push_back( s.top().value );
         s.pop();
     }
@@ -126,7 +126,7 @@ std::pair< value_type,int > execute_operator( value_type n1, value_type n2, std:
             return result;
         }
 		result.first = n1%n2;
-	}
+    }
 	
     else if( opr == "+" ) result.first = n1+n2;
 	
@@ -150,8 +150,7 @@ std::pair< value_type,int > evaluate_postfix( std::vector< std::string > postfix
     
     std::stack< value_type > s;
 
-    for( const auto & ch : postfix_ )
-	{
+    for( const auto & ch : postfix_ ){
 		bool is_operand = true;
 		long long int integer;
 
@@ -167,7 +166,7 @@ std::pair< value_type,int > evaluate_postfix( std::vector< std::string > postfix
         
 
         else if ( std::string("+-%^/*").find( ch ) != std::string::npos )
-		{
+        {
             // Recover the two operands in reverse order.
             auto op2 = s.top(); s.pop();
             auto op1 = s.top(); s.pop();

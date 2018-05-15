@@ -3,7 +3,8 @@
 #include <algorithm>
 #include <cassert>
 
-int diffOPENING_CLOSING = 0;
+int scopeOPENING = 0;
+int scopeCLOSING = 0;
 
 /// Converts the input character c_ into its corresponding terminal symbol code.
 Parser::terminal_symbol_t  Parser::lexer( char c_ ) const
@@ -160,16 +161,18 @@ Parser::ResultType Parser::expression()
 			{
 				return ResultType( ResultType::EXTRANEOUS_SYMBOL, std::distance( expr.begin(), it_curr_symb ) );
 			}
+			
+			// After a operator, we need a term to apply operation.
+			// If there is none, a term is missing.
+			skip_ws();			
+			if( end_input() ) {
+				return ResultType( ResultType::MISSING_TERM, std::distance( expr.begin(), it_curr_symb ) );
+			}
 
 			result = term();
 			if( result.type != ResultType::OK )
 			{
-				if( result.type == ResultType::ILL_FORMED_INTEGER or result.type == ResultType::INTEGER_OUT_OF_RANGE)
-				{
-					return result;
-				}
-
-				return ResultType( ResultType::MISSING_TERM, std::distance( expr.begin(), it_curr_symb ) );
+				return result;
 			}
 
 			// Skip to get the next operator, if existant.
@@ -198,7 +201,7 @@ Parser::ResultType Parser::term()
     if( accept( terminal_symbol_t::TS_OPENING ) )
 	{
 		// Increases the difference between scopes of opening and closing.
-		diffOPENING_CLOSING++;
+		scopeOPENING++;
 
 		token_list.emplace_back( Token( "(", Token::token_t::SCOPE, 1 ) );
 
@@ -213,11 +216,28 @@ Parser::ResultType Parser::term()
 	}
 
 	// Se não detectamos parênteses, então devemos analisar um inteiro.
-	if ( not accept( terminal_symbol_t::TS_OPENING ) and not accept( terminal_symbol_t::TS_CLOSING ) )
+	if ( not accept( terminal_symbol_t::TS_OPENING ) and not accept( terminal_symbol_t::TS_CLOSING ) and not end_input() )
 	{			
 	    // Guarda o início do termo no input, para possíveis mensagens de erro.
     	auto begin_token( it_curr_symb );
 	    // Processe um inteiro.
+
+		// Before processing an integer, we take in count the numerous unary		// signs '-'. If it is even, we consider it as just the integer without signs. If odd, we will consider the '-'.
+		int minus = 0;
+		while( lexer( *it_curr_symb ) == terminal_symbol_t::TS_MINUS )
+		{
+			minus++;
+			next_symbol();
+		}
+		minus = minus % 2;
+		if( minus != 0 )
+		{
+			begin_token = it_curr_symb-1;
+		}
+		else {
+			begin_token = it_curr_symb;
+		}
+	
 	    result = integer();
 	    // Vamos tokenizar o inteiro, se ele for bem formado.
 	    if ( result.type == ResultType::OK )
@@ -252,7 +272,12 @@ Parser::ResultType Parser::term()
 	// Checa a existencia do parêntese de fechamento.
 	if( accept( terminal_symbol_t::TS_CLOSING ) )
 	{
-		diffOPENING_CLOSING--;
+		scopeCLOSING++;
+		std::cout << scopeOPENING << " " << scopeCLOSING << "\n";
+		if( (scopeOPENING - scopeCLOSING) < 0 ) {
+			std::advance( it_curr_symb, -1 );
+			return ResultType( ResultType::EXTRANEOUS_SYMBOL, std::distance( expr.begin(), it_curr_symb ) );
+		}
 		token_list.emplace_back( Token( ")", Token::token_t::SCOPE ) );
 		
 		// Ao término do parênteses, o termo considerasse terminado.
@@ -300,6 +325,7 @@ Parser::ResultType Parser::natural_number()
     // Tem que vir um número que não seja zero! (de acordo com a definição).
     if ( not digit_excl_zero() )
 	{
+		std::cout << "Ta entrando aqui vadia?\n";
         return ResultType( ResultType::ILL_FORMED_INTEGER, std::distance( expr.begin(), it_curr_symb ) ) ;
 	}
 
@@ -376,23 +402,27 @@ Parser::ResultType Parser::parse( std::string e_ )
     else
     {
         // Chamada regular para expressão.
+		scopeOPENING = 0;
+		scopeCLOSING = 0;
+
         result = expression();
 
         // Verificar se ainda sobrou algo na expressão.
         if ( result.type == ResultType::OK )
         {
-			if( diffOPENING_CLOSING != 0 )
-			{
-				return ResultType( ResultType::MISSING_CLOSING_SCOPE,
-									std::distance( expr.begin(), it_curr_symb ) );
-			}
-            // Neste momento não deveria ter nada sobrando na string, a não ser
+	        // Neste momento não deveria ter nada sobrando na string, a não ser
             // espaços em branco.
             skip_ws(); // Vamos "consumir" os espaços em branco, se existirem....
             if ( not end_input() ) // Se estiver tudo ok, deveríamos estar no final da string.
             {
                 return ResultType( ResultType::EXTRANEOUS_SYMBOL, std::distance( expr.begin(), it_curr_symb ) );
             }
+
+			if( scopeOPENING > scopeCLOSING )
+			{
+				return ResultType( ResultType::MISSING_CLOSING_SCOPE,
+									std::distance( expr.begin(), it_curr_symb ) );
+			}
         }
     }
 		

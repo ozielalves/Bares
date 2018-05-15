@@ -15,39 +15,39 @@ void print_error_msg( const Parser::ResultType & result, std::string str, std::o
     switch ( result.type )
     {
         case Parser::ResultType::UNEXPECTED_END_OF_EXPRESSION:
-			std::cout << ">>> Unexpected end of input at column (" << result.at_col << ")!\n";
-			ofs_ << ">>> Unexpected end of input at column (" << result.at_col << ")!\n";
+			std::cout << ">>> Unexpected end of input at column (" << result.at_col + 1 << ")!\n";
+			ofs_ << "Unexpected end of input at column (" << result.at_col + 1 << ")!\n";
             break;
         case Parser::ResultType::ILL_FORMED_INTEGER:
-			std::cout << ">>> Ill formed integer at column (" << result.at_col << ")!\n";
-			ofs_ << ">>> Ill formed integer at column (" << result.at_col << ")!\n";
+			std::cout << ">>> Ill formed integer at column (" << result.at_col + 1 << ")!\n";
+			ofs_ << "Ill formed integer at column (" << result.at_col + 1 << ")!\n";
             break;
         case Parser::ResultType::MISSING_TERM:
-            std::cout << ">>> Missing <term> at column (" << result.at_col << ")!\n";
-            ofs_ << ">>> Missing <term> at column (" << result.at_col << ")!\n";
+            std::cout << ">>> Missing <term> at column (" << result.at_col + 1 << ")!\n";
+            ofs_ << "Missing <term> at column (" << result.at_col + 1 << ")!\n";
 			break;
         case Parser::ResultType::EXTRANEOUS_SYMBOL:
-            std::cout << ">>> Extraneous symbol after valid expression found at column (" << result.at_col << ")!\n";
-            ofs_ << ">>> Extraneous symbol after valid expression found at column (" << result.at_col << ")!\n";
+            std::cout << ">>> Extraneous symbol after valid expression found at column (" << result.at_col + 1 << ")!\n";
+            ofs_ << "Extraneous symbol after valid expression found at column (" << result.at_col + 1 << ")!\n";
             break;
         case Parser::ResultType::INTEGER_OUT_OF_RANGE:
-            std::cout << ">>> Integer constant out of range beginning at column (" << result.at_col << ")!\n";
-            ofs_ << ">>> Integer constant out of range beginning at column (" << result.at_col << ")!\n";
+            std::cout << ">>> Integer constant out of range beginning at column (" << result.at_col + 1 << ")!\n";
+            ofs_ << "Integer constant out of range beginning at column (" << result.at_col + 1 << ")!\n";
             break;
 		case Parser::ResultType::MISSING_CLOSING_SCOPE:
-            std::cout << ">>> Missing closing \")\" at column (" << result.at_col << ")!\n";
-            ofs_ << ">>> Missing closing \")\" at column (" << result.at_col << ")!\n";
+            std::cout << ">>> Missing closing \")\" at column (" << result.at_col + 1 << ")!\n";
+            ofs_ << "Missing closing \")\" at column (" << result.at_col + 1 << ")!\n";
             break;
 		default:
             std::cout << ">>> Unhandled error found!\n";
-            ofs_ << ">>> Unhandled error found!\n";
+            ofs_ << "Unhandled error found!\n";
             break;
     }
 
     std::cout << "\"" << str << "\"\n";
     std::cout << " " << error_indicator << std::endl;
-    ofs_ << "\"" << str << "\"\n";
-    ofs_ << " " << error_indicator << std::endl;
+    // ofs_ << "\"" << str << "\"\n";
+    // ofs_ << " " << error_indicator << std::endl;
 }
 
 
@@ -85,9 +85,8 @@ int main( int argc, char **argv )
         // Preparar cabeçalho da saida.
         std::cout << std::setfill('=') << std::setw(80) << "\n";
         std::cout << std::setfill(' ') << ">>> Parsing \"" << expression << "\"\n";
-        ofs << std::setfill('=') << std::setw(80) << "\n";
-        ofs << std::setfill(' ') << ">>> Parsing \"" << expression << "\"\n";
-
+        //ofs << std::setfill('=') << std::setw(80) << "\n";
+        
         // Se deu pau, imprimir a mensagem adequada.
         if ( result.type != Parser::ResultType::OK )
         {
@@ -98,20 +97,15 @@ int main( int argc, char **argv )
         else
         {
             std::cout << ">>> Expression SUCCESSFULLY parsed!\n";
-            ofs << ">>> Expression SUCCESSFULLY parsed!\n";
-        }
+		}
 
          // Recuperar a lista de tokens.
         auto lista = my_parser.get_tokens();
         std::cout << ">>> Tokens: { ";
-        ofs << ">>> Tokens: { ";
         std::copy( lista.begin(), lista.end(),
                 std::ostream_iterator< Token >( std::cout, " " ) );
-        std::copy( lista.begin(), lista.end(),
-                std::ostream_iterator< Token >( ofs, " " ) );
-        std::cout << "}\n";
-        ofs << "}\n";
-
+		std::cout << "}\n";
+        
 	/*---------------- Calculating ---------------------*/
         /// Calculation only usable if expression is successfully parsed.
 		std::vector< std::string > postfix = infix2postfix( lista );
@@ -127,23 +121,22 @@ int main( int argc, char **argv )
 
         if( answer.second < 0)
         {
-            std::cout << "Divison by zero!\n";
-            ofs << "Divison by zero!\n";
+            std::cout << "Division by zero!\n";
+            ofs << "Division by zero!\n";
             continue;
         }
         if( answer.second > 0)
         {
-            std::cout << "Numeric Overflow!\n";
-            ofs << "Numeric Overflow!\n";
+            std::cout << "Numeric overflow error!\n";
+            ofs << "Numeric overflow error!\n";
             continue;
         }
 
 		std::cout << "Expression results in: " << answer.first << "\n";
-        ofs << "Expression results in: " << answer.first << "\n";
+        ofs << answer.first << "\n";
     }
 
     std::cout << "\n>>> Normal exiting...\n";
-    ofs << "\n>>> Normal exiting...\n";
 
     ifs.close();
     ofs.close();

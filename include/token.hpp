@@ -1,10 +1,18 @@
+/**
+ * @file token.hpp
+ * @version 1.0
+ * @date May, 14.
+ * @author Daniel Guerra and Oziel Alves
+ * @title Token lib
+ * @brief Representing a Token. 
+ */
+
 #ifndef _TOKEN_H_
 #define _TOKEN_H_
 
 #include <string>   // std::string
 #include <iostream> // std::ostream
 
-/// Represents a token.
 struct Token
 {
     public:
@@ -19,14 +27,14 @@ struct Token
         token_t type;		//!< The token type, which is either token_t::OPERAND, token_t::OPERATOR or token_t::SCOPE.
 		int precedence;		//!< The token precedence for each type.
 
-        /// Construtor default.
+        /// @brief Construtor default.
         explicit Token( std::string value_="", token_t type_ = token_t::OPERAND, int precedence_=0u )
             : value( value_ )
             , type( type_ )
 			, precedence( precedence_ )
         {/* empty */}
 
-        /// Just to help us debug the code.
+        /// @brief Just to help us debug the code.
         friend std::ostream & operator<<( std::ostream& os_, const Token & t_ )
         {
             std::string types[] = { "OPERAND", "OPERATOR", "SCOPE" };

@@ -1,3 +1,11 @@
+/**
+ * @file driver_parser.cpp
+ * @version 1.0
+ * @date May, 14.
+ * @author Daniel Guerra and Oziel Alves
+ * @title  Driver Parser 
+ */
+
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -6,6 +14,7 @@
 #include "../include/parser.hpp"
 #include "../include/infix2postfix.hpp"
 
+//! @brief Printing the error messages.
 void print_error_msg( const Parser::ResultType & result, std::string str, std::ofstream & ofs_ )
 {
     std::string error_indicator( str.size()+1, ' ');

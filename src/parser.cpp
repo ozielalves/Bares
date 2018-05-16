@@ -219,6 +219,7 @@ Parser::ResultType Parser::term()
 		next_symbol();
 	}
 	minus = minus % 2;
+	skip_ws();
 	if( lexer( *it_curr_symb ) == terminal_symbol_t::TS_OPENING and minus != 0 )
 	{
 		token_list.emplace_back( Token( "-1", Token::token_t::OPERAND, 0 ) );
@@ -248,7 +249,7 @@ Parser::ResultType Parser::term()
 	}
 
 	// If we do not detect parentheses, then we must parse an integer.
-	if ( not accept( terminal_symbol_t::TS_OPENING ) and not accept( terminal_symbol_t::TS_CLOSING ) and not end_input() )
+	if ( not peek( terminal_symbol_t::TS_OPENING ) and not peek( terminal_symbol_t::TS_CLOSING ) and not end_input() )
 	{			
 	    // Saves the beginning of the term in the input, for possible error messages.
     	auto begin_token( it_curr_symb );
@@ -289,7 +290,14 @@ Parser::ResultType Parser::term()
 	{
 		scopeCLOSING++;
 		if( (scopeOPENING - scopeCLOSING) < 0 ) {
-			return ResultType( ResultType::EXTRANEOUS_SYMBOL, std::distance( expr.begin(), it_curr_symb-1 ) );
+            // If there already is a Closing scope where it shouldn't have,
+            // then or there were an operator expected or a operand.
+            // Note that there can't be another scope expected.
+            if( (int) token_list.back().type == 0 ) {
+                return ResultType( ResultType::EXTRANEOUS_SYMBOL, std::distance( expr.begin(), it_curr_symb-1 ) );
+            }
+            else
+                return ResultType( ResultType::ILL_FORMED_INTEGER, std::distance( expr.begin(), it_curr_symb-1 ) );
 		}
 		token_list.emplace_back( Token( ")", Token::token_t::SCOPE ) );
 		

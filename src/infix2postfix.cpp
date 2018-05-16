@@ -9,7 +9,7 @@
 
 /*!
  * Input Postfix expression must be in a desired format.
- * Operands and operator, **both must be single character**.
+ * Operands and operator, **the latter must be single character**.
  * Only '+', '-', '*', '%', '/', and '^'. 
  * Any other character is just ignored.
  */
@@ -102,9 +102,6 @@ std::pair< value_type,int > execute_operator( value_type n1, value_type n2, std:
     declaring and passing possible errors during execution.
     */
     std::pair< value_type,int > result( 0,0 );
-    
-    /* Still need to give the Parser::ResultType to receive division by zero and 
-    * Numeric Overflow */
 	
 	if( opr == "^" ) result.first = static_cast< value_type >( pow( n1, n2 ) );
 	
@@ -149,7 +146,7 @@ std::pair< value_type,int > execute_operator( value_type n1, value_type n2, std:
 //! @brief Change an infix expression into its corresponding postfix representation.
 std::pair< value_type,int > evaluate_postfix( std::vector< std::string > postfix_ ){
     
-    std::stack< value_type > s;
+    sc::stack< value_type > s;
 
     for( const auto & ch : postfix_ ){
 		bool is_operand = true;

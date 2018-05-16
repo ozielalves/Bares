@@ -1,7 +1,7 @@
 /**
  * @file infix2postfix.hpp
  * @version 1.0
- * @date May, 14.
+ * @date May, 10.
  * @author Daniel Guerra and Oziel Alves
  * @title Infix to Postfix Lib 
  * @brief Infix to Postfix conversion Lib
@@ -10,11 +10,9 @@
 #ifndef _INFIX2POSTFIX_HPP_
 #define _INFIX2POSTFIX_HPP_
 
-#include <stack>     // stack
 #include <string>    // string
 #include <cassert>   // assert
 #include <cmath>     // pow
-#include <stdexcept> // std::runtime_error
 #include <vector>    // push_back(), empty() ...
 
 #include "token.hpp"

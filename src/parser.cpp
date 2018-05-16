@@ -1,7 +1,7 @@
 /**
  * @file parser.cpp
  * @version 1.0
- * @date May, 14.
+ * @date May, 10.
  * @author Daniel Guerra and Oziel Alves
  * @title  Operation Parser 
  */
@@ -39,7 +39,7 @@ Parser::terminal_symbol_t  Parser::lexer( char c_ ) const
         case '7':
         case '8':
         case '9':  return terminal_symbol_t::TS_NON_ZERO_DIGIT;
-        case '\0': return terminal_symbol_t::TS_EOS; // end of string: the $ terminal symbol
+        case '\0': return terminal_symbol_t::TS_EOS; // end of string: the terminal symbol
     }
     return terminal_symbol_t::TS_INVALID;
 }
@@ -374,13 +374,6 @@ bool Parser::digit()
 {
     return ( accept( terminal_symbol_t::TS_ZERO ) or digit_excl_zero() ) ? true : false;
 
-/*
-    if ( not accept( terminal_symbol_t::TS_ZERO ) )
-    {
-        return digit_excl_zero();
-    }
-    return true;
-*/
 }
 
 /*!
@@ -397,14 +390,14 @@ Parser::ResultType Parser::parse( std::string e_ )
 {
     expr = e_; //  Guarda a expressão no membro correspondente.
     it_curr_symb = expr.begin(); // Define o simbolo inicial a ser processado.
-    ResultType result; // By default it's OK.
+    ResultType result; // Por padrão, é OK.
 
     // Sempre limpamos a lista de tokens da rodada anterior.
     token_list.clear();
 
     // Vamos verificar se recebemos uma  Let us ignore any leading white spaces.
     skip_ws();
-    if ( end_input() ) // Premature end?
+    if ( end_input() ) // Fim prematuro?
     {
         result = ResultType( ResultType::UNEXPECTED_END_OF_EXPRESSION,
                 std::distance( expr.begin(), it_curr_symb ) );

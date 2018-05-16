@@ -1,7 +1,7 @@
 /**
  * @file driver_parser.cpp
  * @version 1.0
- * @date May, 14.
+ * @date May, 10.
  * @author Daniel Guerra and Oziel Alves
  * @title  Driver Parser 
  */
@@ -55,8 +55,6 @@ void print_error_msg( const Parser::ResultType & result, std::string str, std::o
 
     std::cout << "\"" << str << "\"\n";
     std::cout << " " << error_indicator << std::endl;
-    // ofs_ << "\"" << str << "\"\n";
-    // ofs_ << " " << error_indicator << std::endl;
 }
 
 
@@ -93,14 +91,11 @@ int main( int argc, char **argv )
         auto result = my_parser.parse( expression );
         // Preparar cabeçalho da saida.
         std::cout << std::setfill('=') << std::setw(80) << "\n";
-        std::cout << std::setfill(' ') << ">>> Parsing \"" << expression << "\"\n";
-        //ofs << std::setfill('=') << std::setw(80) << "\n";
-        
+        std::cout << std::setfill(' ') << ">>> Parsing \"" << expression << "\"\n";        
         // Se deu pau, imprimir a mensagem adequada.
         if ( result.type != Parser::ResultType::OK )
         {
             print_error_msg( result, expression, ofs );
-   //         continue;
             /* Won't calculate if it isn't parsed right */
         }
         else
@@ -116,6 +111,7 @@ int main( int argc, char **argv )
 		std::cout << "}\n";
         
 	/*---------------- Calculating ---------------------*/
+		// For debugging
         if( result.type != Parser::ResultType::OK ) continue;
 		/// Calculation only usable if expression is successfully parsed.
 		std::vector< std::string > postfix = infix2postfix( lista );

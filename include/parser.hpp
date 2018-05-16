@@ -1,7 +1,7 @@
 /**
  * @file parser.hpp
  * @version 1.0
- * @date May, 14.
+ * @date May, 10.
  * @author Daniel Guerra and Oziel Alves
  * @title Parcer lib 
  */
@@ -86,12 +86,6 @@ class Parser
         
         /// @brief Default destructor
         ~Parser() = default;
-        
-        /// @brief Turn off copy constructor. We do not need it.
-        Parser( const Parser & ) = delete;  // Construtor cópia.
-        
-        /// @brief Turn off assignment operator.
-        Parser & operator=( const Parser & ) = delete; // Atribuição.
 
     private:
         

@@ -1,7 +1,7 @@
 /**
  * @file token.hpp
  * @version 1.0
- * @date May, 14.
+ * @date May, 10.
  * @author Daniel Guerra and Oziel Alves
  * @title Token lib
  * @brief Representing a Token. 

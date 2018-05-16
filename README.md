@@ -57,16 +57,21 @@ Functions implemented for:
 - [x] Incorporate the syntactic analysis to parse any input expression.
 - [x] Integrate all the modifications into a single program.
 - [x] Fix parenthesis issue.
-- [x] Make it accept countless '-' before integers terms. Like  $------3$.
-- [x] Make it accept countless '-' before parentheses with expressions. Like $-----(4+5+-7)$.
-- [ ] Correct that fucking ass nigga of Closing Parenthesis at begin.
-- [ ] Doxygen commentation.
+- [x] Make it accept countless '-' before terms. May it be a expression between parentheses or a integer. Like  $----3$ or $----(4+5---(2^3)).
+- [x] Doxygen commentation.
 
 ## How to compile
+First of all, obviously this repository is needed to work as desired, so we must to download this repo. As we know that ```git``` is a tremendous tool for any programmer, then we must have git installed.
 
-To compile we will use a makefile, so all compilations be more dynamic and automatic.
+To compile we will use a makefile, so compilations may be more dynamic and automatic.
 ```bash
-# To compile the whole project, insert 'make':
+# Using 'git clone' to clone this repo into desired directory:
+$ git clone https://github.com/ozielalves/Bares.git
+
+# Enter repo:
+$ cd Bares
+
+# To compile the whole project, insert 'make' inside root of path:
 $ make
 
 # To clean up all remaining trash data and files, such as the binary ones, insert 'make clean':

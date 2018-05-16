@@ -155,7 +155,7 @@ std::pair< value_type,int > evaluate_postfix( std::vector< std::string > postfix
 		try { integer = stoll( ch ); }
 		catch( const std::invalid_argument & e ){
             
-            is_operand = false;
+            is_operand = false; 
         }
 		
 

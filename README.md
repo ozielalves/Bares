@@ -106,6 +106,6 @@ $ ./bares data/in.txt data/out.txt
 
 ## Authorship
 
-Program developed by _Daniel Oliveira Guerra_ (*daniel.guerra13@hotmail.com*) and _Oziel Alves_ (*ozielalves@ufrn.edu.br*), 2018.1
+Program developed by [_Daniel Oliveira Guerra_](https://github.com/Codigos-de-Guerra) (*daniel.guerra13@hotmail.com*) and [_Oziel Alves_](https://github.com/ozielalves) (*ozielalves@ufrn.edu.br*), 2018.1
 
 &copy; IMD/UFRN 2018.

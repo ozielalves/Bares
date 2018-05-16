@@ -9,6 +9,7 @@ SRC_PATH = src
 BUILD_PATH = build
 BIN_PATH = $(BUILD_PATH)/bin
 DATA_PATH = data
+DOCS_PATH = docs
 
 # executable #
 BIN_NAME = bares
@@ -44,7 +45,6 @@ debug: export CXXFLAGS := $(CXXFLAGS) $(COMPILE_FLAGS) $(DEBUG)
 debug: dirs
 	@$(MAKE) all
 
-
 .PHONY: release
 release: export CXXFLAGS := $(CXXFLAGS) $(COMPILE_FLAGS) $(OPTIMIZE)
 release: dirs
@@ -64,10 +64,14 @@ clean:
 	@echo "Deleting directories"
 	@$(RM) -r $(BUILD_PATH)
 	@$(RM) -r $(BIN_PATH)
+	@$(RM) -r $(DOCS_PATH)
 
 # checks the executable and symlinks to the output
 .PHONY: all
-all: $(BIN_PATH)/$(BIN_NAME)
+all: project docs
+
+.PHONY: project
+project: $(BIN_PATH)/$(BIN_NAME)
 	@echo "Making symlink: $(BIN_NAME) -> $<"
 	@$(RM) $(BIN_NAME)
 	@ln -s $(BIN_PATH)/$(BIN_NAME) $(BIN_NAME)
@@ -79,6 +83,11 @@ $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
 
 # Add dependency files, if they exist
 -include $(DEPS)
+
+# Creates a Doxygen file
+docs:
+	@echo "Generating Documentation"
+	@doxygen $(DATA_PATH)/config
 
 # Source file rules
 # After the first compilation they will be joined with the rules from the

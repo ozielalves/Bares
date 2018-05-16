@@ -61,8 +61,14 @@ Functions implemented for:
 - [x] Doxygen commentation.
 
 ## How to compile
+
 First of all, obviously this repository is needed to work as desired, so we must to download this repo. As we know that ```git``` is a tremendous tool for any programmer, then we must have git installed.
 
+It is also expected for user to have installed [doxygen](https://en.wikipedia.org/wiki/Doxygen) program. This will automatically generate documentation for code. Not a necessary package to compile and run program, but it is a tool to guide user through code functions. To install `doxygen` on UBUNTU, for example:
+
+```bash
+$ sudo apt-get install doxygen
+```
 To compile we will use a makefile, so compilations may be more dynamic and automatic.
 ```bash
 # Using 'git clone' to clone this repo into desired directory:
@@ -71,7 +77,7 @@ $ git clone https://github.com/ozielalves/Bares.git
 # Enter repo:
 $ cd Bares
 
-# To compile the whole project, insert 'make' inside root of path:
+# To compile the whole project and also generate documentation, insert 'make' inside root of path:
 $ make
 
 # To clean up all remaining trash data and files, such as the binary ones, insert 'make clean':

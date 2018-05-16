@@ -100,6 +100,9 @@ Let's say your information is stored in a file called $in.txt$, which is inside 
 ```bash
 $ ./bares data/in.txt data/out.txt
 ```
+## GitHub Repository:
+
+*https://github.com/ozielalves/Bares*
 
 ## Authorship
 

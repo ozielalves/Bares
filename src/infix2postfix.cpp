@@ -18,7 +18,6 @@
 #include "../include/stack.hpp" // stack
 #include <limits>
 
-
 /*---------------------------------------------------------------------------*/
 
 //! @brief Sees if you are looking at '^' operator..
